@@ -11,6 +11,13 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        greenCustom: "#C1FD35", // Verde especificado
+        darkCustom: "#201F22",  // Gris oscuro especificado
+        blackCustom: "#000000", // Negro especificado
+      },
+      fontSize: {
+        'custom-48': '48px',
+        'custom-34': '34px',
       },
     },
   },
