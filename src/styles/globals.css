@@ -19,3 +19,18 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Inputs */
+.input-field {
+  @apply w-full px-4 py-2 rounded-md bg-white text-black placeholder-gray-400 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-greenCustom;
+}
+
+/* Botón verde */
+.btn-green {
+  @apply w-full bg-greenCustom text-black font-bold py-2 rounded-md hover:opacity-90;
+}
+
+/* Botón gris */
+.btn-gray {
+  @apply w-full bg-[#CECECE] text-black font-bold py-2 rounded-md hover:opacity-90;
+}
