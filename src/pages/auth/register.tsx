@@ -1,17 +1,64 @@
 import Footer from "@/components/Footer";
 import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 
+// Esquema de validación con Yup
+const schema = yup.object().shape({
+    nombre: yup.string().required("El nombre es obligatorio"),
+    apellido: yup.string().required("El apellido es obligatorio"),
+    dni: yup
+        .string()
+        .matches(/^[0-9]+$/, "El DNI debe contener solo números")
+        .required("El DNI es obligatorio"),
+    email: yup
+        .string()
+        .email("Debe ser un correo válido")
+        .required("El correo electrónico es obligatorio"),
+    password: yup
+        .string()
+        .min(6, "La contraseña debe tener al menos 6 caracteres")
+        .max(20, "La contraseña no puede tener más de 20 caracteres")
+        .matches(
+            /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
+            "Debe contener una mayúscula, un número y un carácter especial"
+        )
+        .required("La contraseña es obligatoria"),
+    confirmPassword: yup
+        .string()
+        .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
+        .required("Confirma tu contraseña"),
+    telefono: yup
+        .string()
+        .matches(/^[0-9]+$/, "El teléfono debe contener solo números")
+        .required("El teléfono es obligatorio"),
+});
 
 export default function Register() {
 
     const router = useRouter();
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    /* const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // Aquí va tu lógica de registro con la API.
         // Si el registro es exitoso, redirige al éxito.
         router.push("/auth/success");
+    }; */
+
+    // Configuración de React Hook Form con Yup
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        resolver: yupResolver(schema), // Conecta las validaciones con React Hook Form
+    });
+
+    const onSubmit = (data: any) => {
+        console.log(data); // Aquí puedes enviar los datos al backend
+        router.push("/auth/success"); // Redirige a la pantalla de registro exitoso
     };
 
 
@@ -31,27 +78,104 @@ export default function Register() {
             {/* Formulario de registro */}
             <div className="flex-grow flex flex-col justify-center items-center px-6 md:px-4">
                 <h1 className="text-white text-2xl font-bold mb-6">Crear cuenta</h1>
-                <form className="w-full max-w-4xl grid grid-cols-1 gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
-                    {/* Input Nombre */}
-                    <input type="text" placeholder="Nombre*" className="input-field" />
-                    {/* Input Apellido */}
-                    <input type="text" placeholder="Apellido*" className="input-field" />
-                    {/* Input DNI */}
-                    <input type="text" placeholder="DNI*" className="input-field" />
-                    {/* Input Correo electrónico */}
-                    <input type="email" placeholder="Correo electrónico*" className="input-field" />
-                    {/* Indicaciones sobre la contraseña */}
+                <form
+                    className="w-full max-w-4xl grid grid-cols-1 gap-4 md:grid-cols-2"
+                    onSubmit={handleSubmit(onSubmit)}
+                >
+                    {/* Contenedor del input Nombre */}
+                    <div className="flex flex-col col-span-1">
+                        <input
+                            type="text"
+                            placeholder="Nombre*"
+                            {...register("nombre")}
+                            className="input-field"
+                        />
+                        <p className="text-red-500 text-xs mt-1">{errors.nombre?.message}</p>
+                    </div>
+
+                    {/* Contenedor del input Apellido */}
+                    <div className="flex flex-col col-span-1">
+                        <input
+                            type="text"
+                            placeholder="Apellido*"
+                            {...register("apellido")}
+                            className="input-field"
+                        />
+                        <p className="text-red-500 text-xs mt-1">{errors.apellido?.message}</p>
+                    </div>
+
+                    {/* Contenedor del input DNI */}
+                    <div className="flex flex-col col-span-1">
+                        <input
+                            type="text"
+                            placeholder="DNI*"
+                            {...register("dni")}
+                            className="input-field"
+                        />
+                        <p className="text-red-500 text-xs mt-1">{errors.dni?.message}</p>
+                    </div>
+
+                    {/* Contenedor del input Correo electrónico */}
+                    <div className="flex flex-col col-span-1">
+                        <input
+                            type="email"
+                            placeholder="Correo electrónico*"
+                            {...register("email")}
+                            className="input-field"
+                        />
+                        <p className="text-red-500 text-xs mt-1">{errors.email?.message}</p>
+                    </div>
+
+                    {/* Texto sobre contraseña */}
                     <p className="text-[11.2px] text-[#EEEAEA] md:col-span-2">
                         Usa entre 6 y 20 caracteres (debe contener al menos 1 carácter especial, una mayúscula y un número).
                     </p>
-                    {/* Input Contraseña */}
-                    <input type="password" placeholder="Contraseña*" className="input-field" />
-                    {/* Input Confirmar contraseña */}
-                    <input type="password" placeholder="Confirmar contraseña*" className="input-field" />
-                    {/* Input Teléfono */}
-                    <input type="tel" placeholder="Teléfono*" className="input-field" />
-                    {/* Botón Crear cuenta */}
-                    <button type="submit" className="btn-green">Crear cuenta</button>
+
+                    {/* Contenedor del input Contraseña */}
+                    <div className="flex flex-col col-span-1">
+                        <input
+                            type="password"
+                            placeholder="Contraseña*"
+                            {...register("password")}
+                            className="input-field"
+                        />
+                        <p className="text-red-500 text-xs mt-1">{errors.password?.message}</p>
+                    </div>
+
+                    {/* Contenedor del input Confirmar contraseña */}
+                    <div className="flex flex-col col-span-1">
+                        <input
+                            type="password"
+                            placeholder="Confirmar contraseña*"
+                            {...register("confirmPassword")}
+                            className="input-field"
+                        />
+                        <p className="text-red-500 text-xs mt-1">{errors.confirmPassword?.message}</p>
+                    </div>
+
+                    {/* Contenedor del input Teléfono */}
+                    <div className="flex flex-col col-span-1">
+                        <input
+                            type="tel"
+                            placeholder="Teléfono*"
+                            {...register("telefono")}
+                            className="input-field"
+                        />
+                        <p className="text-red-500 text-xs mt-1">{errors.telefono?.message}</p>
+                    </div>
+
+                    {/* Contenedor del botón */}
+                    <div className="flex flex-col col-span-1">
+                        <button type="submit" className="btn-green">
+                            Crear cuenta
+                        </button>
+                        {/* Mensaje general de error */}
+                        {Object.keys(errors).length > 0 && (
+                            <p className="text-red-500 text-sm mt-2 text-center">
+                                Completa los campos requeridos
+                            </p>
+                        )}
+                    </div>
                 </form>
             </div>
 
