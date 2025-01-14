@@ -4,6 +4,9 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+import { registerUser } from "@/services/api"; // Importamos la función
+
+
 
 // Esquema de validación con Yup
 const schema = yup.object().shape({
@@ -56,9 +59,25 @@ export default function Register() {
         resolver: yupResolver(schema), // Conecta las validaciones con React Hook Form
     });
 
-    const onSubmit = (data: any) => {
-        console.log(data); // Aquí puedes enviar los datos al backend
-        router.push("/auth/success"); // Redirige a la pantalla de registro exitoso
+    const onSubmit = async (data: any) => {
+        try {
+            // Reestructurar los datos para que coincidan con lo que el backend espera
+            const formattedData = {
+                dni: parseInt(data.dni, 10), // Convertir a número
+                email: data.email,
+                firstname: data.nombre, // Mapear "nombre" a "firstname"
+                lastname: data.apellido, // Mapear "apellido" a "lastname"
+                password: data.password,
+                phone: data.telefono, // Mapear "telefono" a "phone"
+            };
+
+            const response = await registerUser(formattedData); // Llamamos a la API
+            console.log("Registro exitoso:", response);
+            router.push("/auth/success"); // Redirige a la pantalla de éxito
+        } catch (error: any) {
+            console.error("Error en el registro:", error.message);
+            alert(error.message || "Error al registrar el usuario"); // Mostrar error al usuario
+        }
     };
 
 

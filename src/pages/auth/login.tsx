@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useRouter } from "next/router";
+
+import { loginUser } from "@/services/api"; // Asegúrate de importar la función
 
 // Esquema de validación para cada paso
 const emailSchema = yup.object().shape({
@@ -19,6 +22,8 @@ const passwordSchema = yup.object().shape({
 
 export default function Login() {
   const [step, setStep] = useState(1); // Controla el paso actual (1: correo, 2: contraseña)
+  const [email, setEmail] = useState(""); // Nuevo estado para el email
+  const router = useRouter();
 
   // Formulario para el paso de email
   const {
@@ -39,14 +44,28 @@ export default function Login() {
   });
 
   const handleEmailStep = (data: any) => {
-    console.log("Email válido:", data);
+    setEmail(data.email); // Guardar el email en el estado
     setStep(2); // Avanza al siguiente paso
   };
 
-  const handlePasswordStep = (data: any) => {
-    console.log("Contraseña válida:", data);
-    // Aquí iría la lógica para enviar las credenciales de inicio de sesión
-    alert("Inicio de sesión exitoso");
+  const handlePasswordStep = async (data: any) => {
+    try {
+      const credentials = {
+        email: email, // Guardamos el email del primer paso
+        password: data.password,
+      };
+      console.log("Enviando credenciales:", credentials); // Verificando
+      const result = await loginUser(credentials); // Llamamos al servicio de login
+      console.log("Inicio de sesión exitoso:", result);
+  
+      // Guardar token en localStorage o contexto
+      localStorage.setItem("token", result.token);
+  
+      // Redirigir al usuario a una pantalla principal o dashboard
+      router.push("/inicio"); // Cambia la ruta según tu proyecto
+    } catch (error: any) {
+      alert(error.message || "Error al iniciar sesión");
+    }
   };
 
   return (
