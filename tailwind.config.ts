@@ -15,6 +15,7 @@ export default {
         greenCustom: "#C1FD35", // Verde especificado
         darkCustom: "#201F22",  // Gris oscuro especificado
         blackCustom: "#000000", // Negro especificado
+        grayCustom: "#EEEAEA", // Gris oscuro especificado
       },
       fontSize: {
         'custom-48': '48px',

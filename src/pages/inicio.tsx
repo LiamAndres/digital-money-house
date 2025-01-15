@@ -1,34 +1,49 @@
+import Layout from "@/components/Layout";
 import withAuth from "@/utils/withAuth";
 
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
-import Sidebar from "@/components/Sidebar";
-
 function Inicio() {
-    return (
-        <div className="bg-darkCustom min-h-screen flex flex-col">
-            {/* Navbar */}
-            <Navbar />
+  return (
+    <Layout>
+      <div className="p-6 space-y-6">
+        {/* Bloque 1: Tarjeta Dinero Disponible */}
+        <section className="bg-darkCustom text-white rounded-lg p-6 flex flex-col md:flex-row justify-between items-center">
+          <div>
+            <p className="text-lg">Dinero disponible</p>
+            <h2 className="text-4xl font-bold mt-2">$ 6.890.534,17</h2>
+          </div>
+          <div className="flex space-x-4 mt-4 md:mt-0">
+            <a href="#" className="text-greenCustom underline">Ver tarjetas</a>
+            <a href="#" className="text-greenCustom underline">Ver CVU</a>
+          </div>
+        </section>
 
-            {/* Contenido principal con Sidebar y Dashboard */}
-            <div className="flex flex-grow">
-                {/* Sidebar */}
-                <Sidebar />
-                {/* Contenido */}
-                <main className="flex-grow flex flex-col justify-center items-center px-4">
-                    <h1 className="text-white text-3xl font-bold text-center mb-6">
-                        Bienvenido a tu Dashboard
-                    </h1>
-                    <p className="text-greenCustom text-lg">
-                        El inicio de sesión fue exitoso.
-                    </p>
-                </main>
-            </div>
+        {/* Bloque 2: Botones principales */}
+        <section className="flex flex-col md:flex-row justify-between gap-4">
+          <button className="bg-greenCustom text-darkCustom font-bold py-3 rounded-lg w-full md:w-1/2">
+            Cargar dinero
+          </button>
+          <button className="bg-greenCustom text-darkCustom font-bold py-3 rounded-lg w-full md:w-1/2">
+            Pago de servicios
+          </button>
+        </section>
 
-            {/* Footer */}
-            <Footer />
-        </div>
-    );
+        {/* Bloque 3: Barra de búsqueda */}
+        <section>
+          <input
+            type="text"
+            placeholder="Buscar en tu actividad"
+            className="w-full py-3 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-greenCustom"
+          />
+        </section>
+
+        {/* Bloque 4: Dashboard */}
+        <section>
+          {/* Aquí se renderizará el componente Dashboard */}
+          <p>Dashboard placeholder</p>
+        </section>
+      </div>
+    </Layout>
+  );
 }
 
 export default withAuth(Inicio);

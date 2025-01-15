@@ -1,0 +1,1 @@
+// Componente reutilizable del dashboard
