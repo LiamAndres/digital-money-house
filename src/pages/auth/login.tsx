@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRouter } from "next/router";
 
 import { loginUser } from "@/services/api"; // Asegúrate de importar la función
+import { useAuth } from "@/context/AuthContext";
 
 // Esquema de validación para cada paso
 const emailSchema = yup.object().shape({
@@ -24,6 +25,13 @@ export default function Login() {
   const [step, setStep] = useState(1); // Controla el paso actual (1: correo, 2: contraseña)
   const [email, setEmail] = useState(""); // Nuevo estado para el email
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/inicio"); // Redirige al dashboard si ya está logueado
+    }
+  }, [isAuthenticated, router]);
 
   // Formulario para el paso de email
   const {
@@ -38,6 +46,7 @@ export default function Login() {
   const {
     register: registerPassword,
     handleSubmit: handlePasswordSubmit,
+    reset: resetPasswordForm,
     formState: { errors: passwordErrors },
   } = useForm({
     resolver: yupResolver(passwordSchema),
@@ -45,8 +54,13 @@ export default function Login() {
 
   const handleEmailStep = (data: any) => {
     setEmail(data.email); // Guardar el email en el estado
+    
+    resetPasswordForm(); // Limpia cualquier valor residual en el formulario de contraseña
+    console.log("Formulario de contraseña reiniciado", data);
     setStep(2); // Avanza al siguiente paso
   };
+
+  const { login } = useAuth();
 
   const handlePasswordStep = async (data: any) => {
     try {
@@ -58,8 +72,8 @@ export default function Login() {
       const result = await loginUser(credentials); // Llamamos al servicio de login
       console.log("Inicio de sesión exitoso:", result);
   
-      // Guardar token en localStorage o contexto
-      localStorage.setItem("token", result.token);
+      // Llama a login del contexto en lugar de localStorage directamente
+      login(result.token);
   
       // Redirigir al usuario a una pantalla principal o dashboard
       router.push("/inicio"); // Cambia la ruta según tu proyecto
@@ -85,6 +99,7 @@ export default function Login() {
             <form
               onSubmit={handleEmailSubmit(handleEmailStep)}
               className="flex flex-col gap-2"
+              autoComplete="off"
             >
               {/* Input de correo */}
               <input
@@ -92,6 +107,7 @@ export default function Login() {
                 placeholder="Correo electrónico"
                 {...registerEmail("email")}
                 className="input-field"
+                autoComplete="email"
               />
               <p className="text-red-500 text-xs">{emailErrors.email?.message}</p>
 
@@ -109,8 +125,10 @@ export default function Login() {
               Ingresá tu contraseña
             </h1>
             <form
+            key="password-step"
               onSubmit={handlePasswordSubmit(handlePasswordStep)}
               className="flex flex-col gap-2"
+              autoComplete="off"
             >
               {/* Input de contraseña */}
               <input
@@ -118,6 +136,8 @@ export default function Login() {
                 placeholder="Contraseña"
                 {...registerPassword("password")}
                 className="input-field"
+                autoComplete="new-password"
+                defaultValue=""
               />
               <p className="text-red-500 text-xs">{passwordErrors.password?.message}</p>
 

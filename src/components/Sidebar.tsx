@@ -1,11 +1,14 @@
 import { useRouter } from "next/router";
+import { useAuth } from "@/context/AuthContext"; // Importar el contexto de autenticación
 
 export default function Sidebar() {
     const router = useRouter();
+    const { logout } = useAuth(); // Usar la función de logout del contexto
 
     const handleLogout = () => {
-        // Eliminar el token del localStorage
-        localStorage.removeItem("token");
+        /* // Eliminar el token del localStorage
+        localStorage.removeItem("token"); */
+        logout(); // Llama al método logout del contexto para actualizar el estado
         // Redirigir a la página promocional
         router.push("/");
     };

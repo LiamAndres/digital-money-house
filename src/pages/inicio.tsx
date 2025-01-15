@@ -1,8 +1,10 @@
+import withAuth from "@/utils/withAuth";
+
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 
-export default function Inicio() {
+function Inicio() {
     return (
         <div className="bg-darkCustom min-h-screen flex flex-col">
             {/* Navbar */}
@@ -28,3 +30,5 @@ export default function Inicio() {
         </div>
     );
 }
+
+export default withAuth(Inicio);

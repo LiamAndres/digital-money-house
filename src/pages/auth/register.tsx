@@ -1,10 +1,12 @@
 import Footer from "@/components/Footer";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 import { registerUser } from "@/services/api"; // Importamos la función
+import { useAuth } from "@/context/AuthContext"
 
 
 
@@ -42,6 +44,14 @@ const schema = yup.object().shape({
 export default function Register() {
 
     const router = useRouter();
+    const { isAuthenticated } = useAuth(); // Usamos el estado de autenticación del contexto
+
+    // Redirige al inicio si el usuario está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/inicio");
+    }
+  }, [isAuthenticated, router]);
 
     /* const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
