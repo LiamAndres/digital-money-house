@@ -1,7 +1,14 @@
+import Dashboard from "@/components/Dashboard";
 import Layout from "@/components/Layout";
 import withAuth from "@/utils/withAuth";
 
 function Inicio() {
+    const mockTransactions = [
+        { account_id: 1, amount: 1265.57, dated: "sábado", description: "Transferiste a Rodrigo", destination: "Rodrigo", id: 1, origin: "Cuenta", type: "transfer" },
+        { account_id: 1, amount: 1265.57, dated: "sábado", description: "Transferiste a Consorcio", destination: "Consorcio", id: 2, origin: "Cuenta", type: "transfer" },
+        { account_id: 1, amount: 1265.57, dated: "viernes", description: "Ingresaste dinero", destination: "Cuenta", id: 3, origin: "Banco", type: "deposit" },
+        { account_id: 1, amount: 1265.57, dated: "lunes", description: "Te transfirieron dinero", destination: "Cuenta", id: 4, origin: "Tercero", type: "transfer" },
+      ];
   return (
     <Layout>
       <div className="p-6 space-y-6">
@@ -39,7 +46,13 @@ function Inicio() {
         {/* Bloque 4: Dashboard */}
         <section>
           {/* Aquí se renderizará el componente Dashboard */}
-          <p>Dashboard placeholder</p>
+            <Dashboard 
+                transactions={mockTransactions}
+                limit={10} 
+                showViewAll={true} 
+        showPagination={false}
+                title="Tu actividad" 
+            />
         </section>
       </div>
     </Layout>

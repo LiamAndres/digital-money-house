@@ -23,7 +23,7 @@ export default function Sidebar() {
                     </Link>
                 </li>
                 <li className="p-4 hover:bg-gray-100 cursor-pointer">
-                    <Link href="/inicio" className="block px-4">
+                    <Link href="/actividad" className="block px-4">
                         Actividad
                     </Link>
                 </li>
