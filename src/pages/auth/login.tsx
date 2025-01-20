@@ -6,7 +6,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRouter } from "next/router";
 
-import { loginUser } from "@/services/api"; // Asegúrate de importar la función
+/* import { loginUser } from "@/services/api"; */
+import { loginUser } from "@/services/AuthService";
 import { useAuth } from "@/context/AuthContext";
 
 // Esquema de validación para cada paso
@@ -68,15 +69,16 @@ export default function Login() {
         email: email, // Guardamos el email del primer paso
         password: data.password,
       };
-      console.log("Enviando credenciales:", credentials); // Verificando
+  
+      console.log("Enviando credenciales:", credentials);
       const result = await loginUser(credentials); // Llamamos al servicio de login
       console.log("Inicio de sesión exitoso:", result);
   
-      // Llama a login del contexto en lugar de localStorage directamente
-      login(result.token);
+      // Usar el método login del AuthContext
+      await login(result.token);
   
       // Redirigir al usuario a una pantalla principal o dashboard
-      router.push("/inicio"); // Cambia la ruta según tu proyecto
+      router.push("/inicio");
     } catch (error: any) {
       alert(error.message || "Error al iniciar sesión");
     }

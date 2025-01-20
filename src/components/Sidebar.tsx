@@ -7,8 +7,6 @@ export default function Sidebar() {
     const { logout } = useAuth(); // Usar la función de logout del contexto
 
     const handleLogout = () => {
-        /* // Eliminar el token del localStorage
-        localStorage.removeItem("token"); */
         logout(); // Llama al método logout del contexto para actualizar el estado
         // Redirigir a la página promocional
         router.push("/");
@@ -56,12 +54,6 @@ export default function Sidebar() {
                     </button>
                 </li>
             </ul>
-            {/* <button
-                onClick={handleLogout}
-                className="p-4 bg-red-500 text-white font-bold hover:bg-red-400"
-            >
-                Cerrar sesión
-            </button> */}
         </nav>
     );
 }

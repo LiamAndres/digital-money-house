@@ -1,9 +1,19 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { getAccount } from "@/services/AccountService";
+import { getUser } from "@/services/UserService";
 
-// Definir la interfaz del contexto
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  token: string | null;
+  userData: {
+    user_id: number;
+    alias: string;
+    cvu: string;
+    firstname: string;
+    lastname: string;
+    available_amount: number;
+  } | null;
+  login: (token: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -11,46 +21,114 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [userData, setUserData] = useState<AuthContextType["userData"]>(null);
 
-  // Al cargar, verifica si hay un token en localStorage
+  // Sincronización con localStorage (nueva integración)
   useEffect(() => {
-    const checkToken = () => {
-      const token = localStorage.getItem("token");
-      setIsAuthenticated(!!token);
+    const syncWithLocalStorage = () => {
+      const storedToken = localStorage.getItem("token");
+      if (!storedToken) {
+        // Si no hay token en localStorage, limpiar estado del contexto
+        setIsAuthenticated(false);
+        setToken(null);
+        setUserData(null);
+      }
     };
 
-    // Verifica el token al cargar la página
-    checkToken();
+    // Verificar el estado inicial al montar
+    syncWithLocalStorage();
 
-    // Escucha cambios en localStorage (por ejemplo, si se cierra sesión)
-    window.addEventListener("storage", checkToken);
+    // Escuchar cambios en localStorage para sincronizar en tiempo real
+    window.addEventListener("storage", syncWithLocalStorage);
 
-    // Limpia el evento al desmontar
     return () => {
-      window.removeEventListener("storage", checkToken);
+      window.removeEventListener("storage", syncWithLocalStorage);
     };
   }, []);
 
-  /* // Al cargar, verifica si hay un token en localStorage
+  // Restaurar sesión al cargar la aplicación
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
-  }, []); */
+    const restoreSession = async () => {
+      const storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        try {
+          setToken(storedToken);
+          setIsAuthenticated(true);
+  
+          // Restaurar datos del usuario y la cuenta
+          const accountData = await getAccount(storedToken);
+          const userData = await getUser(accountData.user_id, storedToken);
+  
+          setUserData({
+            user_id: accountData.user_id,
+            alias: accountData.alias,
+            cvu: accountData.cvu,
+            firstname: userData.firstname,
+            lastname: userData.lastname,
+            available_amount: accountData.available_amount,
+          });
+        } catch (error) {
+          console.error("Error al restaurar sesión:", error);
+          logout(); // Si falla, limpiamos el estado
+        }
+      }
+    };
+  
+    restoreSession();
+  }, []);
 
-  // Función para iniciar sesión
-  const login = (token: string) => {
-    localStorage.setItem("token", token);
-    setIsAuthenticated(true);
+  const login = async (receivedToken: string) => {
+    try {
+      // Guardar el token en localStorage
+      localStorage.setItem("token", receivedToken);
+      setToken(receivedToken);
+      setIsAuthenticated(true);
+
+      // Llamar a getAccount para obtener los datos de la cuenta
+      const accountData = await getAccount(receivedToken);
+
+      // Llamar a getUser para obtener los datos adicionales del usuario
+      const userData = await getUser(accountData.user_id, receivedToken);
+
+      // Guardar los datos de la cuenta en el estado
+      setUserData({
+        user_id: accountData.user_id,
+        alias: accountData.alias,
+        cvu: accountData.cvu,
+        firstname: userData.firstname,
+        lastname: userData.lastname,
+        available_amount: accountData.available_amount,
+      });
+    } catch (error) {
+      console.error("Error en login:", error);
+      logout(); // En caso de error, limpiamos el estado
+    }
   };
 
-  // Función para cerrar sesión
   const logout = () => {
-    localStorage.removeItem("token");
+    console.log("Ejecutando logout...");
+    localStorage.clear(); // Limpia todo el almacenamiento local
     setIsAuthenticated(false);
+    setToken(null);
+    setUserData(null);
+    console.log("Estado después de logout (dentro de logout):", {
+      isAuthenticated,
+      token,
+      userData,
+    });
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        token,
+        userData,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,7 +1,21 @@
-//  Componente para la navegación superior
-import { useAuth } from "@/context/AuthContext"; // Importamos el contexto de autenticación
+import { useAuth } from "@/context/AuthContext";
+
 export default function Navbar() {
-    const { isAuthenticated } = useAuth(); // Obtenemos el estado de autenticación
+    const { isAuthenticated, userData } = useAuth();
+
+    console.log("Renderizando Navbar:", { isAuthenticated, userData });
+
+    // Datos quemados por ahora (serán reemplazados con datos reales del endpoint)
+    /* const mockUserData = {
+        firstname: "Mauricio",
+        lastname: "Brito",
+    }; */
+
+    const getInitials = (firstName: string, lastName: string) => {
+        const initials = `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`;
+        return initials.toUpperCase();
+    };
+
     return (
         <nav className="bg-darkCustom text-white p-4 flex justify-between items-center">
             {/* Logo */}
@@ -9,11 +23,27 @@ export default function Navbar() {
                 <img
                     src="/images/logo.png"
                     alt="Digital Money House Logo"
-                    className="h-10" // Ajusta la altura del logo
+                    className="h-10"
                 />
             </div>
 
-            {/* Botones (solo se muestran si no está autenticado) */}
+            {/* Bloque del usuario autenticado (Mock) */}
+            {isAuthenticated && userData && (
+                <a
+                    href="/inicio"
+                    className="flex items-center gap-4 hover:opacity-90"
+                    title="Ir a Inicio"
+                >
+                    <div className="bg-greenCustom text-darkCustom font-bold rounded-full w-10 h-10 flex items-center justify-center">
+                    {getInitials(userData.firstname, userData.lastname)}
+                    </div>
+                    <span className="font-medium">
+                        Hola, {userData.firstname} {userData.lastname}
+                    </span>
+                </a>
+            )}
+
+            {/* Botones de autenticación si no está autenticado */}
             {!isAuthenticated && (
                 <div>
                     <a
@@ -33,4 +63,3 @@ export default function Navbar() {
         </nav>
     );
 }
-
