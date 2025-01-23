@@ -7,14 +7,19 @@ interface AuthContextType {
   token: string | null;
   userData: {
     user_id: number;
+    id: number;
     alias: string;
     cvu: string;
     firstname: string;
     lastname: string;
+    email: string;
+    dni: number;
+    phone: string;
     available_amount: number;
   } | null;
   login: (token: string) => Promise<void>;
   logout: () => void;
+  setUserData: (data: AuthContextType["userData"]) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -62,10 +67,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   
           setUserData({
             user_id: accountData.user_id,
+            id: accountData.id,
             alias: accountData.alias,
             cvu: accountData.cvu,
             firstname: userData.firstname,
             lastname: userData.lastname,
+            email: userData.email,
+            dni: userData.dni,
+            phone: userData.phone,
             available_amount: accountData.available_amount,
           });
         } catch (error) {
@@ -94,10 +103,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Guardar los datos de la cuenta en el estado
       setUserData({
         user_id: accountData.user_id,
+        id: accountData.id,
         alias: accountData.alias,
         cvu: accountData.cvu,
         firstname: userData.firstname,
         lastname: userData.lastname,
+        email: userData.email,
+        dni: userData.dni,
+        phone: userData.phone,
         available_amount: accountData.available_amount,
       });
     } catch (error) {
@@ -125,6 +138,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isAuthenticated,
         token,
         userData,
+        setUserData,
         login,
         logout,
       }}

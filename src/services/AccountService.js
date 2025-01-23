@@ -17,6 +17,8 @@ export const getAccount = async (token) => {
     }
 
     const data = await response.json();
+    console.log("Datos de la cuenta obtenidos:", data);
+    
     return data; // Devuelve alias, cvu, available_amount, id (account_id) y user_id
   } catch (error) {
     console.error("Error en getAccount:", error.message);

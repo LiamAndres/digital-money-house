@@ -1,15 +1,30 @@
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/Layout";
+import { updateUser } from "@/services/UserService";
+
+
+interface ProfileData {
+    email: string;
+    firstname: string;
+    lastname: string;
+    dni: string;
+    phone: string;
+    password?: string;
+}
 
 export default function Perfil() {
-    const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos en modo edición
-    const [profileData, setProfileData] = useState({
-        email: "mauriciobrito@digitalhouse.com",
-        firstname: "Mauricio",
-        lastname: "Brito",
-        dni: "20350269798",
-        phone: "1146730989",
-        password: "******",
+    const { userData, token, setUserData } = useAuth();
+    const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [profileData, setProfileData] = useState<ProfileData>({
+        email: userData?.email || "",
+        firstname: userData?.firstname || "",
+        lastname: userData?.lastname || "",
+        dni: userData?.dni?.toString() || "",
+        phone: userData?.phone || "",
+        password: "",
     });
 
     const handleInputChange = (field: string, value: string) => {
@@ -18,13 +33,34 @@ export default function Perfil() {
 
     const handleEditClick = () => {
         setIsEditing(true); // Activar modo edición
+        setProfileData((prev) => ({ ...prev, password: "" })); // Al entrar en modo edición, borrar el valor inicial del campo contraseña
     };
 
-    const handleSaveClick = () => {
-        // Aquí se realizaría la conexión al endpoint para guardar los datos
-        console.log("Datos guardados:", profileData);
-        setIsEditing(false); // Desactivar modo edición
+    const handleSaveClick = async () => {
+        if (!token || !userData) return;
+
+        try {
+            setIsLoading(true); // Mostrar indicador de carga
+            const { dni, password, ...updatableData } = profileData; // Excluir 'dni' del objeto enviado al backend
+
+            const payload = password
+                ? { ...updatableData, password } // Incluir contraseña si se modificó
+                : updatableData; // Excluir contraseña si está vacía
+
+            const updatedData = await updateUser(userData.user_id, token, payload);
+            setUserData(updatedData); // Actualizar el contexto global con los nuevos datos
+            setIsEditing(false); // Salir del modo edición
+        } catch (error) {
+            console.error("Error al actualizar datos:", (error as Error).message);
+            alert("Hubo un error al actualizar tus datos. Por favor, intenta nuevamente.");
+        } finally {
+            setIsLoading(false); // Ocultar indicador de carga
+        }
     };
+
+    if (!userData) {
+        return <div>Cargando datos...</div>; // Muestra un mensaje mientras se cargan los datos
+    }
 
     return (
         <Layout>
@@ -54,11 +90,15 @@ export default function Perfil() {
                                 <input
                                     id={item.field}
                                     type={item.field === "password" ? "password" : "text"}
+                                    placeholder={item.field === "password" && !isEditing ? "******" : ""}
                                     value={item.value}
                                     onChange={(e) => handleInputChange(item.field, e.target.value)}
-                                    disabled={!isEditing} // Solo editable en modo edición
-                                    className={`border border-gray-300 rounded-md px-2 py-1 w-full md:w-2/3 bg-gray-100 focus:bg-white focus:outline-none ${!isEditing && "text-gray-500"
-                                        }`}
+                                    disabled={!isEditing && item.field !== "password"}
+                                    className={
+                                        `border border-gray-300 rounded-md px-2 py-1 w-full md:w-2/3
+                                        ${!isEditing ? "bg-gray-100 text-gray-700" : "bg-white text-gray-900"}
+                                        focus:outline-none`
+                                    }
                                 />
                             </li>
                         ))}
@@ -75,13 +115,13 @@ export default function Perfil() {
                             <button
                                 onClick={handleSaveClick}
                                 className="bg-greenCustom text-darkCustom font-bold py-2 px-4 rounded-md hover:bg-opacity-90"
+                                disabled={isLoading}
                             >
-                                Guardar
+                                {isLoading ? "Guardando..." : "Guardar"}
                             </button>
                         )}
                     </div>
                 </div>
-
                 {/* Bloque 2: Gestioná los medios de pago */}
                 <div className="w-full max-w-4xl mx-auto">
                     <a
@@ -99,8 +139,8 @@ export default function Perfil() {
                     </h2>
                     <ul className="space-y-4">
                         {[
-                            { label: "CVU", value: "0000002100075320000000" },
-                            { label: "Alias", value: "estealiasnoexiste" },
+                            { label: "CVU", value: userData.cvu },
+                            { label: "Alias", value: userData.alias },
                         ].map((item) => (
                             <li key={item.label} className="flex justify-between items-center">
                                 <div className="flex-1">
