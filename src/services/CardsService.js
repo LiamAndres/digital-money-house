@@ -27,3 +27,53 @@ export const createCard = async (accountId, token, cardData) => {
     throw error;
   }
 };
+
+// Obtener las tarjetas por account_id
+export const getCards = async (accountId, token) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/accounts/${accountId}/cards`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al obtener las tarjetas");
+      }
+  
+      const cards = await response.json();
+      return cards; // Retorna el array de tarjetas
+    } catch (error) {
+      console.error("Error en getCards:", error.message);
+      throw error;
+    }
+  };
+
+// Función para eliminar una tarjeta
+  export const deleteCard = async (accountId, cardId, token) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/accounts/${accountId}/cards/${cardId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al eliminar la tarjeta");
+      }
+  
+      return { success: true }; // Retornar un indicador de éxito
+    } catch (error) {
+      console.error("Error en deleteCard:", error.message);
+      throw error;
+    }
+  };
