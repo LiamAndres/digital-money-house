@@ -7,6 +7,7 @@ import * as yup from "yup";
 
 import { registerUser } from "@/services/api"; // Importamos la función
 import { useAuth } from "@/context/AuthContext"
+import Link from "next/link";
 
 
 
@@ -96,12 +97,12 @@ export default function Register() {
             {/* Navbar */}
             <div className="bg-greenCustom p-4 flex justify-between items-center">
                 <img src="/images/Logo-black.png" alt="Logo" className="h-8" />
-                <a
+                <Link
                     href="/auth/login"
                     className="bg-[#3A393E] text-white font-bold text-[14px] px-4 py-2 rounded-md hover:opacity-90"
                 >
                     Iniciar sesión
-                </a>
+                </Link>
             </div>
 
             {/* Formulario de registro */}

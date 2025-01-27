@@ -3,6 +3,9 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { getCards, deleteCard } from "@/services/CardsService";
 import { getAccount } from "@/services/AccountService";
+import CardList from "@/components/CardList";
+import AddNewCard from "@/components/AddNewCard";
+import Link from "next/link";
 
 interface Card {
   id: number;
@@ -22,6 +25,7 @@ export default function Tarjetas() {
   useEffect(() => {
     const fetchCards = async () => {
       if (!token) {
+        console.log("Esperando el token...");
         setError("No se encontró un token de sesión.");
         setLoading(false);
         return;
@@ -91,51 +95,22 @@ export default function Tarjetas() {
           </h2>
           <div className="flex items-center justify-between">
             {/* Icono "+" y texto "Nueva tarjeta" alineados a la izquierda */}
-            <a href="/nueva-tarjeta" className="flex items-center gap-2 hover:underline">
-              <img src="/images/icon-agregar.png" alt="Agregar" className="h-6 w-6" />
-              <span className="text-greenCustom font-bold">Nueva tarjeta</span>
-            </a>
+            <AddNewCard href="/nueva-tarjeta" />
             {/* Icono de flecha alineado a la derecha */}
-            <a href="/nueva-tarjeta">
+            <Link href="/nueva-tarjeta">
               <img src="/images/flecha-continuar.png" alt="Continuar" className="h-6 w-6" />
-            </a>
+            </Link>
           </div>
         </div>
 
         {/* Bloque 2: Tus tarjetas */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-darkCustom font-bold text-lg mb-4">Tus tarjetas</h2>
-
-          {loading ? (
-            <p className="text-gray-500">Cargando tarjetas...</p>
-          ) : error ? (
-            <p className="text-red-500">{error}</p>
-          ) : cards.length > 0 ? (
-            <ul className="divide-y divide-gray-200">
-              {cards.map((card) => (
-                <li
-                  key={card.id}
-                  className="flex justify-between items-center py-4"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="bg-greenCustom rounded-full h-4 w-4"></div>
-                    <p className="text-darkCustom">
-                      Terminada en {card.number_id.toString().slice(-4)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleDelete(card.id)}
-                    className="text-darkCustom hover:underline"
-                  >
-                    Eliminar
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-500">No tienes tarjetas asociadas.</p>
-          )}
-        </div>
+        {loading ? (
+          <p className="text-gray-500">Cargando tarjetas...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <CardList cards={cards} onDelete={handleDelete} />
+        )}
       </div>
     </Layout>
   );

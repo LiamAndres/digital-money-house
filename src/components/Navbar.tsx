@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
 
 export default function Navbar() {
     const { isAuthenticated, userData } = useAuth();
@@ -29,7 +30,7 @@ export default function Navbar() {
 
             {/* Bloque del usuario autenticado (Mock) */}
             {isAuthenticated && userData && (
-                <a
+                <Link
                     href="/inicio"
                     className="flex items-center gap-4 hover:opacity-90"
                     title="Ir a Inicio"
@@ -40,24 +41,24 @@ export default function Navbar() {
                     <span className="font-medium">
                         Hola, {userData.firstname} {userData.lastname}
                     </span>
-                </a>
+                </Link>
             )}
 
             {/* Botones de autenticación si no está autenticado */}
             {!isAuthenticated && (
                 <div>
-                    <a
+                    <Link
                         href="/auth/login"
                         className="mr-4 text-greenCustom border border-greenCustom px-4 py-2 rounded-md hover:bg-greenCustom hover:text-black"
                     >
                         Ingresar
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                         href="/auth/register"
                         className="bg-greenCustom text-black px-4 py-2 rounded-md hover:opacity-90"
                     >
                         Crear cuenta
-                    </a>
+                    </Link>
                 </div>
             )}
         </nav>

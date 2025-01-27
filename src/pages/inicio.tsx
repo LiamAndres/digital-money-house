@@ -1,6 +1,7 @@
 import Dashboard from "@/components/Dashboard";
 import Layout from "@/components/Layout";
 import withAuth from "@/utils/withAuth";
+import Link from "next/link";
 
 function Inicio() {
     const mockTransactions = [
@@ -19,8 +20,8 @@ function Inicio() {
             <h2 className="text-4xl font-bold mt-2">$ 6.890.534,17</h2>
           </div>
           <div className="flex space-x-4 mt-4 md:mt-0">
-            <a href="#" className="text-greenCustom underline">Ver tarjetas</a>
-            <a href="#" className="text-greenCustom underline">Ver CVU</a>
+            <Link href="#" className="text-greenCustom underline">Ver tarjetas</Link>
+            <Link href="#" className="text-greenCustom underline">Ver CVU</Link>
           </div>
         </section>
 

@@ -29,28 +29,46 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [userData, setUserData] = useState<AuthContextType["userData"]>(null);
 
-  // Sincronización con localStorage (nueva integración)
+  // Sincronización con localStorage
   useEffect(() => {
-    const syncWithLocalStorage = () => {
+    const syncWithLocalStorage = async () => {
       const storedToken = localStorage.getItem("token");
-      if (!storedToken) {
-        // Si no hay token en localStorage, limpiar estado del contexto
-        setIsAuthenticated(false);
-        setToken(null);
-        setUserData(null);
+      if (storedToken && !token) {
+        console.log("Sincronizando token desde localStorage...");
+        try {
+          setToken(storedToken);
+          setIsAuthenticated(true);
+
+          // Restaurar datos del usuario y la cuenta
+          const accountData = await getAccount(storedToken);
+          const userData = await getUser(accountData.user_id, storedToken);
+
+          setUserData({
+            user_id: accountData.user_id,
+            id: accountData.id,
+            alias: accountData.alias,
+            cvu: accountData.cvu,
+            firstname: userData.firstname,
+            lastname: userData.lastname,
+            email: userData.email,
+            dni: userData.dni,
+            phone: userData.phone,
+            available_amount: accountData.available_amount,
+          });
+        } catch (error) {
+          console.error("Error al sincronizar sesión:", error);
+          logout();
+        }
       }
     };
 
-    // Verificar el estado inicial al montar
-    syncWithLocalStorage();
-
-    // Escuchar cambios en localStorage para sincronizar en tiempo real
+    // Escuchar cambios en localStorage
     window.addEventListener("storage", syncWithLocalStorage);
 
     return () => {
       window.removeEventListener("storage", syncWithLocalStorage);
     };
-  }, []);
+  }, [token]);
 
   // Restaurar sesión al cargar la aplicación
   useEffect(() => {
@@ -60,11 +78,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
           setToken(storedToken);
           setIsAuthenticated(true);
-  
+
           // Restaurar datos del usuario y la cuenta
           const accountData = await getAccount(storedToken);
           const userData = await getUser(accountData.user_id, storedToken);
-  
+
           setUserData({
             user_id: accountData.user_id,
             id: accountData.id,
@@ -83,24 +101,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       }
     };
-  
+
     restoreSession();
   }, []);
 
   const login = async (receivedToken: string) => {
     try {
-      // Guardar el token en localStorage
       localStorage.setItem("token", receivedToken);
       setToken(receivedToken);
       setIsAuthenticated(true);
 
-      // Llamar a getAccount para obtener los datos de la cuenta
       const accountData = await getAccount(receivedToken);
-
-      // Llamar a getUser para obtener los datos adicionales del usuario
       const userData = await getUser(accountData.user_id, receivedToken);
 
-      // Guardar los datos de la cuenta en el estado
       setUserData({
         user_id: accountData.user_id,
         id: accountData.id,
@@ -115,21 +128,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
     } catch (error) {
       console.error("Error en login:", error);
-      logout(); // En caso de error, limpiamos el estado
+      logout();
     }
   };
 
   const logout = () => {
     console.log("Ejecutando logout...");
-    localStorage.clear(); // Limpia todo el almacenamiento local
+    localStorage.clear();
     setIsAuthenticated(false);
     setToken(null);
     setUserData(null);
-    console.log("Estado después de logout (dentro de logout):", {
-      isAuthenticated,
-      token,
-      userData,
-    });
   };
 
   return (

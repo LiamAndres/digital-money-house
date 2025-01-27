@@ -1,4 +1,5 @@
 // Componente reutilizable del dashboard
+import Link from "next/link";
 import React from "react";
 
 interface Transaction {
@@ -49,9 +50,9 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, limit, showPaginati
       {/* Mostrar el enlace "Ver toda tu actividad" si está habilitado */}
       {showViewAll && (
         <div className="text-right mt-4">
-          <a href="/actividad" className="text-darkCustom font-bold hover:underline">
+          <Link href="/actividad" className="text-darkCustom font-bold hover:underline">
             Ver toda tu actividad
-          </a>
+          </Link>
         </div>
       )}
     </div>
