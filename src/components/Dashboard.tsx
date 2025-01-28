@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { getAllTransactions } from "@/services/TransactionsService";
@@ -20,10 +21,12 @@ interface DashboardProps {
   showPagination?: boolean;    // Si muestra o no paginación
   showViewAll?: boolean;       // Si muestra o no el enlace "Ver toda tu actividad"
   title: string;               // Título del dashboard
+  showFilters?: boolean;      // Si muestra o no los filtros
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAll, title }) => {
+const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAll, title, showFilters = true }) => {
   const { token, userData } = useAuth();
+  const router = useRouter();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +66,14 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
 
     fetchTransactions();
   }, [token, userData]);
+
+  // Leer el parámetro "search" desde la URL y aplicarlo al estado
+  useEffect(() => {
+    const { search } = router.query;
+    if (typeof search === "string") {
+      setSearchTerm(search);
+    }
+  }, [router.query]);
 
   // Aplicar filtros por período, tipo y palabras clave
   useEffect(() => {
@@ -142,6 +153,7 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
     setSearchTerm("");
     setFilteredTransactions(transactions); // Restaurar la lista completa
     setCurrentPage(1); // Volver a la primera página
+    router.push("/actividad", undefined, { shallow: true }); // Limpiar query sin recargar
   };
 
   // Filtrado y paginación
@@ -153,70 +165,76 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
       <h2 className="text-lg text-darkCustom font-bold mb-4">{title}</h2>
+      {/* Seccion de Buscador y filtros */}
+      {showFilters && (
+        <>
 
-      {/* Buscador */}
-      <div className="mb-4">
-        <label htmlFor="searchFilter" className="block text-darkCustom font-bold mb-2">
-          Buscar por título:
-        </label>
-        <input
-          id="searchFilter"
-          type="text"
-          placeholder="Buscar en tu actividad"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
-        />
-      </div>
+          {/* Buscador */}
+          <div className="mb-4">
+            <label htmlFor="searchFilter" className="block text-darkCustom font-bold mb-2">
+              Buscar por título:
+            </label>
+            <input
+              id="searchFilter"
+              type="text"
+              placeholder="Buscar en tu actividad"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
+            />
+          </div>
 
-      {/* Filtros por período */}
-      <div className="mb-4">
-        <label htmlFor="periodFilter" className="block text-darkCustom font-bold mb-2">
-          Filtrar por período:
-        </label>
-        <select
-          id="periodFilter"
-          value={selectedPeriod}
-          onChange={(e) => setSelectedPeriod(e.target.value)}
-          className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
-        >
-          <option value="all">Todos</option>
-          <option value="today">Hoy</option>
-          <option value="yesterday">Ayer</option>
-          <option value="lastWeek">Última semana</option>
-          <option value="last15Days">Últimos 15 días</option>
-          <option value="lastMonth">Último mes</option>
-          <option value="last3Months">Últimos 3 meses</option>
-        </select>
-      </div>
+          {/* Filtros por período */}
+          <div className="mb-4">
+            <label htmlFor="periodFilter" className="block text-darkCustom font-bold mb-2">
+              Filtrar por período:
+            </label>
+            <select
+              id="periodFilter"
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+              className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
+            >
+              <option value="all">Todos</option>
+              <option value="today">Hoy</option>
+              <option value="yesterday">Ayer</option>
+              <option value="lastWeek">Última semana</option>
+              <option value="last15Days">Últimos 15 días</option>
+              <option value="lastMonth">Último mes</option>
+              <option value="last3Months">Últimos 3 meses</option>
+            </select>
+          </div>
 
-      {/* Filtro por tipo */}
-      <div className="mb-4">
-        <label htmlFor="typeFilter" className="block text-darkCustom font-bold mb-2">
-          Filtrar por tipo de operación:
-        </label>
-        <select
-          id="typeFilter"
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
-          className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
-        >
-          <option value="all">Todos</option>
-          <option value="ingresos">Ingresos</option>
-          <option value="egresos">Egresos</option>
-        </select>
-      </div>
+          {/* Filtro por tipo */}
+          <div className="mb-4">
+            <label htmlFor="typeFilter" className="block text-darkCustom font-bold mb-2">
+              Filtrar por tipo de operación:
+            </label>
+            <select
+              id="typeFilter"
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
+            >
+              <option value="all">Todos</option>
+              <option value="ingresos">Ingresos</option>
+              <option value="egresos">Egresos</option>
+            </select>
+          </div>
 
-      {/* Botón para limpiar filtros */}
-      <div className="mb-4 text-right">
-        <button
-          onClick={handleClearFilters}
-          className="bg-red-500 text-white font-bold py-2 px-4 rounded-md hover:bg-red-600"
-        >
-          Limpiar Filtros
-        </button>
-      </div>
+          {/* Botón para limpiar filtros */}
+          <div className="mb-4 text-right">
+            <button
+              onClick={handleClearFilters}
+              className="bg-red-500 text-white font-bold py-2 px-4 rounded-md hover:bg-red-600"
+            >
+              Limpiar Filtros
+            </button>
+          </div>
+        </>
+      )}
 
+      {/* Sección de registros mostrados ingresos y egresos */}
       {loading ? (
         <p className="text-gray-500">Cargando actividad...</p>
       ) : error ? (

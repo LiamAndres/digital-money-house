@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useRouter } from "next/router";
 import Dashboard from "@/components/Dashboard";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
@@ -8,6 +10,8 @@ import { getAccount } from "@/services/AccountService";
 
 function Inicio() {
   const { token, userData, setUserData } = useAuth();
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para la búsqueda
 
   useEffect(() => {
     const fetchAccountData = async () => {
@@ -16,11 +20,8 @@ function Inicio() {
       try {
         const accountData = await getAccount(token);
         setUserData((prevUserData) => {
-          if (!prevUserData) return null; // Manejo de casos donde sea null
-          return {
-            ...prevUserData,
-            available_amount: accountData.available_amount, // Actualizamos el dinero disponible
-          };
+          if (!prevUserData) return null;
+          return { ...prevUserData, available_amount: accountData.available_amount };
         });
       } catch (error) {
         console.error("Error al obtener los datos de la cuenta:", error);
@@ -29,6 +30,16 @@ function Inicio() {
 
     fetchAccountData();
   }, [token, setUserData]);
+
+  // Manejo del evento cuando se presiona "Enter"
+  const handleSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && searchTerm.trim() !== "") {
+      router.push({
+        pathname: "/actividad",
+        query: { search: searchTerm }, // Redirigimos con el filtro de búsqueda
+      });
+    }
+  };
 
   return (
     <Layout>
@@ -62,18 +73,16 @@ function Inicio() {
           <input
             type="text"
             placeholder="Buscar en tu actividad"
-            className="w-full py-3 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-greenCustom"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearch} // Detectamos la tecla "Enter"
+            className="text-darkCustom w-full py-3 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-greenCustom"
           />
         </section>
 
         {/* Bloque 4: Dashboard */}
         <section>
-          <Dashboard
-            limit={10}
-            showViewAll={true}
-            showPagination={false}
-            title="Tu actividad"
-          />
+          <Dashboard limit={10} showViewAll={true} showPagination={false} showFilters={false} title="Tu actividad" />
         </section>
       </div>
     </Layout>
