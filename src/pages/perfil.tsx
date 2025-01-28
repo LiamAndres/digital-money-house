@@ -66,7 +66,7 @@ export default function Perfil() {
 
     return (
         <Layout>
-            <div className="bg-EEEAEA min-h-screen flex flex-col gap-6 px-4 md:px-8">
+            <div className="bg-EEEAEA min-h-screen flex flex-col gap-6">
                 {/* Bloque 1: Tus datos */}
                 <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl mx-auto">
                     <h2 className="text-darkCustom font-bold text-lg mb-4">Tus datos</h2>
