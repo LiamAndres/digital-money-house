@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { getAllTransactions } from "@/services/TransactionsService"; // Cambiamos al nuevo servicio
+import { getAllTransactions } from "@/services/TransactionsService";
 
 interface Transaction {
   account_id: number;
@@ -24,14 +24,16 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAll, title }) => {
   const { token, userData } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("all"); // Estado para el filtro
   const pageSize = 10;
 
+  // Cargar las transacciones al montar el componente
   useEffect(() => {
     const fetchTransactions = async () => {
-      console.log("Token:", token, "Account ID:", userData?.id);
       if (!token || !userData?.id) {
         setError("No se pudo cargar la actividad. Inicia sesión nuevamente.");
         setLoading(false);
@@ -39,8 +41,15 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
       }
 
       try {
-        const data = await getAllTransactions(userData.id, token); // Usamos el nuevo servicio
-        setTransactions(data); // Guardamos las transacciones en el estado
+        const data = await getAllTransactions(userData.id, token);
+
+        // Ordenar las transacciones por fecha (descendente)
+        const sortedTransactions = data.sort(
+          (a, b) => new Date(b.dated).getTime() - new Date(a.dated).getTime()
+        );
+
+        setTransactions(sortedTransactions); // Guardamos las transacciones originales
+        setFilteredTransactions(sortedTransactions); // Por defecto, no hay filtros aplicados
         setLoading(false);
       } catch (error) {
         console.error("Error al cargar las transacciones:", error);
@@ -52,8 +61,74 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
     fetchTransactions();
   }, [token, userData]);
 
+  // Aplicar el filtro por período
+  const handleFilterByPeriod = (period: string) => {
+    setSelectedPeriod(period); // Actualizamos el filtro seleccionado
+
+    // Obtener la fecha actual
+    const today = new Date();
+    let filtered: Transaction[] = [];
+
+    // Definir rangos de fechas basados en el filtro seleccionado
+    switch (period) {
+      case "today":
+        filtered = transactions.filter((tx) => {
+          const transactionDate = new Date(tx.dated);
+          return (
+            transactionDate.getDate() === today.getDate() &&
+            transactionDate.getMonth() === today.getMonth() &&
+            transactionDate.getFullYear() === today.getFullYear()
+          );
+        });
+        break;
+
+      case "yesterday":
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+        filtered = transactions.filter((tx) => {
+          const transactionDate = new Date(tx.dated);
+          return (
+            transactionDate.getDate() === yesterday.getDate() &&
+            transactionDate.getMonth() === yesterday.getMonth() &&
+            transactionDate.getFullYear() === yesterday.getFullYear()
+          );
+        });
+        break;
+
+      case "lastWeek":
+        const lastWeek = new Date();
+        lastWeek.setDate(today.getDate() - 7);
+        filtered = transactions.filter((tx) => new Date(tx.dated) >= lastWeek);
+        break;
+
+      case "last15Days":
+        const last15Days = new Date();
+        last15Days.setDate(today.getDate() - 15);
+        filtered = transactions.filter((tx) => new Date(tx.dated) >= last15Days);
+        break;
+
+      case "lastMonth":
+        const lastMonth = new Date();
+        lastMonth.setMonth(today.getMonth() - 1);
+        filtered = transactions.filter((tx) => new Date(tx.dated) >= lastMonth);
+        break;
+
+      case "last3Months":
+        const last3Months = new Date();
+        last3Months.setMonth(today.getMonth() - 3);
+        filtered = transactions.filter((tx) => new Date(tx.dated) >= last3Months);
+        break;
+
+      default:
+        filtered = transactions; // Si selecciona "todos", mostramos todas las transacciones
+        break;
+    }
+
+    setFilteredTransactions(filtered); // Actualizamos las transacciones filtradas
+  };
+
   // Filtrado y paginación
-  const paginatedTransactions = transactions.slice(
+  const paginatedTransactions = filteredTransactions.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -61,6 +136,27 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
       <h2 className="text-lg text-darkCustom font-bold mb-4">{title}</h2>
+
+      {/* Filtros por período */}
+      <div className="mb-4">
+        <label htmlFor="periodFilter" className="block text-darkCustom font-bold mb-2">
+          Filtrar por período:
+        </label>
+        <select
+          id="periodFilter"
+          value={selectedPeriod}
+          onChange={(e) => handleFilterByPeriod(e.target.value)}
+          className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
+        >
+          <option value="all">Todos</option>
+          <option value="today">Hoy</option>
+          <option value="yesterday">Ayer</option>
+          <option value="lastWeek">Última semana</option>
+          <option value="last15Days">Últimos 15 días</option>
+          <option value="lastMonth">Último mes</option>
+          <option value="last3Months">Últimos 3 meses</option>
+        </select>
+      </div>
 
       {loading ? (
         <p className="text-gray-500">Cargando actividad...</p>
@@ -105,7 +201,7 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
                 Anterior
               </button>
               <button
-                disabled={currentPage === Math.ceil(transactions.length / pageSize)}
+                disabled={currentPage === Math.ceil(filteredTransactions.length / pageSize)}
                 onClick={() => setCurrentPage((prev) => prev + 1)}
                 className="text-darkCustom px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
               >
