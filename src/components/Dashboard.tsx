@@ -28,8 +28,9 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("all"); // Estado para el filtro de período
-  const [selectedType, setSelectedType] = useState<string>("all"); // Estado para el filtro de tipo de operación
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
+  const [selectedType, setSelectedType] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para el buscador
   const pageSize = 10;
 
   // Cargar las transacciones al montar el componente
@@ -62,7 +63,7 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
     fetchTransactions();
   }, [token, userData]);
 
-  // Aplicar filtros por período y tipo
+  // Aplicar filtros por período, tipo y palabras clave
   useEffect(() => {
     let filtered: Transaction[] = transactions;
 
@@ -116,14 +117,22 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
     // Filtro por tipo
     if (selectedType !== "all") {
       filtered = filtered.filter((tx) => {
-        if (selectedType === "ingresos") return tx.type === "Deposit"; // Ingresos
-        if (selectedType === "egresos") return tx.type === "Transaction"; // Egresos
+        if (selectedType === "ingresos") return tx.type === "Deposit";
+        if (selectedType === "egresos") return tx.type === "Transaction";
         return true;
       });
     }
 
+    // Filtro por palabras clave (buscador)
+    if (searchTerm.trim() !== "") {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+      filtered = filtered.filter((tx) =>
+        tx.description.toLowerCase().includes(lowerCaseSearchTerm)
+      );
+    }
+
     setFilteredTransactions(filtered); // Actualizamos el estado con los filtros aplicados
-  }, [selectedPeriod, selectedType, transactions]);
+  }, [selectedPeriod, selectedType, searchTerm, transactions]);
 
   // Filtrado y paginación
   const paginatedTransactions = filteredTransactions.slice(
@@ -134,6 +143,21 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
   return (
     <div className="bg-white rounded-lg shadow-lg p-4">
       <h2 className="text-lg text-darkCustom font-bold mb-4">{title}</h2>
+
+      {/* Buscador */}
+      <div className="mb-4">
+        <label htmlFor="searchFilter" className="block text-darkCustom font-bold mb-2">
+          Buscar por título:
+        </label>
+        <input
+          id="searchFilter"
+          type="text"
+          placeholder="Buscar en tu actividad"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
+        />
+      </div>
 
       {/* Filtros por período */}
       <div className="mb-4">
@@ -184,8 +208,9 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
               <li key={transaction.id} className="flex justify-between items-center py-2">
                 <div className="flex items-center">
                   <div
-                    className={`rounded-full h-4 w-4 mr-4 ${transaction.type === "Deposit" ? "bg-greenCustom" : "bg-red-500"
-                      }`}
+                    className={`rounded-full h-4 w-4 mr-4 ${
+                      transaction.type === "Deposit" ? "bg-greenCustom" : "bg-red-500"
+                    }`}
                   ></div>
                   <p className="text-darkCustom">{transaction.description}</p>
                 </div>
