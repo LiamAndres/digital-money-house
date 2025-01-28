@@ -134,6 +134,15 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
     setFilteredTransactions(filtered); // Actualizamos el estado con los filtros aplicados
   }, [selectedPeriod, selectedType, searchTerm, transactions]);
 
+  // Limpiar todos los filtros
+  const handleClearFilters = () => {
+    setSelectedPeriod("all");
+    setSelectedType("all");
+    setSearchTerm("");
+    setFilteredTransactions(transactions); // Restaurar la lista completa
+    setCurrentPage(1); // Volver a la primera página
+  };
+
   // Filtrado y paginación
   const paginatedTransactions = filteredTransactions.slice(
     (currentPage - 1) * pageSize,
@@ -197,6 +206,16 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
         </select>
       </div>
 
+      {/* Botón para limpiar filtros */}
+      <div className="mb-4 text-right">
+        <button
+          onClick={handleClearFilters}
+          className="bg-red-500 text-white font-bold py-2 px-4 rounded-md hover:bg-red-600"
+        >
+          Limpiar Filtros
+        </button>
+      </div>
+
       {loading ? (
         <p className="text-gray-500">Cargando actividad...</p>
       ) : error ? (
@@ -208,9 +227,8 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
               <li key={transaction.id} className="flex justify-between items-center py-2">
                 <div className="flex items-center">
                   <div
-                    className={`rounded-full h-4 w-4 mr-4 ${
-                      transaction.type === "Deposit" ? "bg-greenCustom" : "bg-red-500"
-                    }`}
+                    className={`rounded-full h-4 w-4 mr-4 ${transaction.type === "Deposit" ? "bg-greenCustom" : "bg-red-500"
+                      }`}
                   ></div>
                   <p className="text-darkCustom">{transaction.description}</p>
                 </div>
