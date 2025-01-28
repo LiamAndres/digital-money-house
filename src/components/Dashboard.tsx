@@ -28,7 +28,8 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("all"); // Estado para el filtro
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("all"); // Estado para el filtro de período
+  const [selectedType, setSelectedType] = useState<string>("all"); // Estado para el filtro de tipo de operación
   const pageSize = 10;
 
   // Cargar las transacciones al montar el componente
@@ -61,71 +62,68 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
     fetchTransactions();
   }, [token, userData]);
 
-  // Aplicar el filtro por período
-  const handleFilterByPeriod = (period: string) => {
-    setSelectedPeriod(period); // Actualizamos el filtro seleccionado
+  // Aplicar filtros por período y tipo
+  useEffect(() => {
+    let filtered: Transaction[] = transactions;
 
-    // Obtener la fecha actual
+    // Filtro por período
     const today = new Date();
-    let filtered: Transaction[] = [];
-
-    // Definir rangos de fechas basados en el filtro seleccionado
-    switch (period) {
-      case "today":
-        filtered = transactions.filter((tx) => {
+    if (selectedPeriod !== "all") {
+      const dateFilterMap: { [key: string]: (tx: Transaction) => boolean } = {
+        today: (tx) => {
           const transactionDate = new Date(tx.dated);
           return (
             transactionDate.getDate() === today.getDate() &&
             transactionDate.getMonth() === today.getMonth() &&
             transactionDate.getFullYear() === today.getFullYear()
           );
-        });
-        break;
-
-      case "yesterday":
-        const yesterday = new Date();
-        yesterday.setDate(today.getDate() - 1);
-        filtered = transactions.filter((tx) => {
+        },
+        yesterday: (tx) => {
+          const yesterday = new Date();
+          yesterday.setDate(today.getDate() - 1);
           const transactionDate = new Date(tx.dated);
           return (
             transactionDate.getDate() === yesterday.getDate() &&
             transactionDate.getMonth() === yesterday.getMonth() &&
             transactionDate.getFullYear() === yesterday.getFullYear()
           );
-        });
-        break;
+        },
+        lastWeek: (tx) => {
+          const lastWeek = new Date();
+          lastWeek.setDate(today.getDate() - 7);
+          return new Date(tx.dated) >= lastWeek;
+        },
+        last15Days: (tx) => {
+          const last15Days = new Date();
+          last15Days.setDate(today.getDate() - 15);
+          return new Date(tx.dated) >= last15Days;
+        },
+        lastMonth: (tx) => {
+          const lastMonth = new Date();
+          lastMonth.setMonth(today.getMonth() - 1);
+          return new Date(tx.dated) >= lastMonth;
+        },
+        last3Months: (tx) => {
+          const last3Months = new Date();
+          last3Months.setMonth(today.getMonth() - 3);
+          return new Date(tx.dated) >= last3Months;
+        },
+      };
 
-      case "lastWeek":
-        const lastWeek = new Date();
-        lastWeek.setDate(today.getDate() - 7);
-        filtered = transactions.filter((tx) => new Date(tx.dated) >= lastWeek);
-        break;
-
-      case "last15Days":
-        const last15Days = new Date();
-        last15Days.setDate(today.getDate() - 15);
-        filtered = transactions.filter((tx) => new Date(tx.dated) >= last15Days);
-        break;
-
-      case "lastMonth":
-        const lastMonth = new Date();
-        lastMonth.setMonth(today.getMonth() - 1);
-        filtered = transactions.filter((tx) => new Date(tx.dated) >= lastMonth);
-        break;
-
-      case "last3Months":
-        const last3Months = new Date();
-        last3Months.setMonth(today.getMonth() - 3);
-        filtered = transactions.filter((tx) => new Date(tx.dated) >= last3Months);
-        break;
-
-      default:
-        filtered = transactions; // Si selecciona "todos", mostramos todas las transacciones
-        break;
+      filtered = filtered.filter(dateFilterMap[selectedPeriod]);
     }
 
-    setFilteredTransactions(filtered); // Actualizamos las transacciones filtradas
-  };
+    // Filtro por tipo
+    if (selectedType !== "all") {
+      filtered = filtered.filter((tx) => {
+        if (selectedType === "ingresos") return tx.type === "Deposit"; // Ingresos
+        if (selectedType === "egresos") return tx.type === "Transaction"; // Egresos
+        return true;
+      });
+    }
+
+    setFilteredTransactions(filtered); // Actualizamos el estado con los filtros aplicados
+  }, [selectedPeriod, selectedType, transactions]);
 
   // Filtrado y paginación
   const paginatedTransactions = filteredTransactions.slice(
@@ -145,7 +143,7 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
         <select
           id="periodFilter"
           value={selectedPeriod}
-          onChange={(e) => handleFilterByPeriod(e.target.value)}
+          onChange={(e) => setSelectedPeriod(e.target.value)}
           className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
         >
           <option value="all">Todos</option>
@@ -158,6 +156,23 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
         </select>
       </div>
 
+      {/* Filtro por tipo */}
+      <div className="mb-4">
+        <label htmlFor="typeFilter" className="block text-darkCustom font-bold mb-2">
+          Filtrar por tipo de operación:
+        </label>
+        <select
+          id="typeFilter"
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+          className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
+        >
+          <option value="all">Todos</option>
+          <option value="ingresos">Ingresos</option>
+          <option value="egresos">Egresos</option>
+        </select>
+      </div>
+
       {loading ? (
         <p className="text-gray-500">Cargando actividad...</p>
       ) : error ? (
@@ -165,30 +180,27 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
       ) : (
         <>
           <ul className="divide-y divide-gray-200">
-            {(limit ? paginatedTransactions.slice(0, limit) : paginatedTransactions).map(
-              (transaction) => (
-                <li key={transaction.id} className="flex justify-between items-center py-2">
-                  <div className="flex items-center">
-                    <div
-                      className={`rounded-full h-4 w-4 mr-4 ${
-                        transaction.type === "Deposit" ? "bg-greenCustom" : "bg-red-500"
+            {paginatedTransactions.map((transaction) => (
+              <li key={transaction.id} className="flex justify-between items-center py-2">
+                <div className="flex items-center">
+                  <div
+                    className={`rounded-full h-4 w-4 mr-4 ${transaction.type === "Deposit" ? "bg-greenCustom" : "bg-red-500"
                       }`}
-                    ></div>
-                    <p className="text-darkCustom">{transaction.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-darkCustom">{`$ ${Math.abs(transaction.amount)}`}</p>
-                    <p className="text-sm text-gray-500">
-                      {new Date(transaction.dated).toLocaleDateString("es-ES", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </p>
-                  </div>
-                </li>
-              )
-            )}
+                  ></div>
+                  <p className="text-darkCustom">{transaction.description}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-darkCustom">{`$ ${Math.abs(transaction.amount)}`}</p>
+                  <p className="text-sm text-gray-500">
+                    {new Date(transaction.dated).toLocaleDateString("es-ES", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+              </li>
+            ))}
           </ul>
 
           {showPagination && (
