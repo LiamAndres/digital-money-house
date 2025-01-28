@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { getAllTransactions } from "@/services/TransactionsService";
+import router from "next/router";
 
 interface Transaction {
   account_id: number;
@@ -224,7 +225,13 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
         <>
           <ul className="divide-y divide-gray-200">
             {paginatedTransactions.map((transaction) => (
-              <li key={transaction.id} className="flex justify-between items-center py-2">
+              <li
+                key={transaction.id}
+                onClick={() =>
+                  router.push(`/detalle-transaccion/${transaction.id}?accountId=${transaction.account_id}`)
+                }
+                className="flex justify-between items-center py-2 cursor-pointer hover:bg-gray-100 rounded-lg p-2 transition-all"
+              >
                 <div className="flex items-center">
                   <div
                     className={`rounded-full h-4 w-4 mr-4 ${transaction.type === "Deposit" ? "bg-greenCustom" : "bg-red-500"
@@ -255,6 +262,17 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
               >
                 Anterior
               </button>
+              {/* Números de página */}
+              {[...Array(Math.ceil(filteredTransactions.length / pageSize)).keys()].map((num) => (
+                <button
+                  key={num + 1}
+                  onClick={() => setCurrentPage(num + 1)}
+                  className={`px-4 py-2 rounded-md ${currentPage === num + 1 ? "bg-greenCustom text-white font-bold" : "bg-gray-300 hover:bg-gray-400"
+                    }`}
+                >
+                  {num + 1}
+                </button>
+              ))}
               <button
                 disabled={currentPage === Math.ceil(filteredTransactions.length / pageSize)}
                 onClick={() => setCurrentPage((prev) => prev + 1)}

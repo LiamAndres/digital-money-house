@@ -79,3 +79,46 @@ export const getAllTransactions = async (accountId, token)=> {
         throw error;
     }
 };
+
+/**
+ * Obtiene los detalles de una transacción específica.
+ * @param {number} accountId - ID de la cuenta.
+ * @param {number} transactionId - ID de la transacción.
+ * @param {string} token - Token de autenticación del usuario.
+ * @returns {Promise<object>} - Detalles de la transacción.
+ */
+export const getTransactionDetails = async (accountId, transactionId, token) => {
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}/accounts/${accountId}/transactions/${transactionId}`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: token,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Error al obtener los detalles de la transacción.");
+        }
+
+        const data = await response.json();
+        console.log("Detalles de la transacción obtenidos:", data);
+        return {
+            account_id: data.account_id || 0,
+            amount: data.amount || 0,
+            dated: data.dated || "",
+            description: data.description || "Sin descripción",
+            destination: data.destination || "",
+            id: data.id || 0,
+            origin: data.origin || "",
+            type: data.type || "Desconocido",
+        };
+    } catch (error) {
+        console.error("Error en getTransactionDetails:", error.message || error);
+        throw error;
+    }
+};
