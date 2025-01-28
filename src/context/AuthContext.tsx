@@ -19,7 +19,7 @@ interface AuthContextType {
   } | null;
   login: (token: string) => Promise<void>;
   logout: () => void;
-  setUserData: (data: AuthContextType["userData"]) => void;
+  setUserData: React.Dispatch<React.SetStateAction<AuthContextType["userData"]>>; // Permite objetos o callbacks
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);

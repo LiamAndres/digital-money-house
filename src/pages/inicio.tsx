@@ -1,15 +1,35 @@
 import Dashboard from "@/components/Dashboard";
 import Layout from "@/components/Layout";
+import { useAuth } from "@/context/AuthContext";
 import withAuth from "@/utils/withAuth";
 import Link from "next/link";
+import { useEffect } from "react";
+import { getAccount } from "@/services/AccountService";
 
 function Inicio() {
-    const mockTransactions = [
-        { account_id: 1, amount: 1265.57, dated: "sábado", description: "Transferiste a Rodrigo", destination: "Rodrigo", id: 1, origin: "Cuenta", type: "transfer" },
-        { account_id: 1, amount: 1265.57, dated: "sábado", description: "Transferiste a Consorcio", destination: "Consorcio", id: 2, origin: "Cuenta", type: "transfer" },
-        { account_id: 1, amount: 1265.57, dated: "viernes", description: "Ingresaste dinero", destination: "Cuenta", id: 3, origin: "Banco", type: "deposit" },
-        { account_id: 1, amount: 1265.57, dated: "lunes", description: "Te transfirieron dinero", destination: "Cuenta", id: 4, origin: "Tercero", type: "transfer" },
-      ];
+  const { token, userData, setUserData } = useAuth();
+
+  useEffect(() => {
+    const fetchAccountData = async () => {
+      if (!token) return;
+
+      try {
+        const accountData = await getAccount(token);
+        setUserData((prevUserData) => {
+          if (!prevUserData) return null; // Manejo de casos donde sea null
+          return {
+            ...prevUserData,
+            available_amount: accountData.available_amount, // Actualizamos el dinero disponible
+          };
+        });
+      } catch (error) {
+        console.error("Error al obtener los datos de la cuenta:", error);
+      }
+    };
+
+    fetchAccountData();
+  }, [token, setUserData]);
+
   return (
     <Layout>
       <div className="p-6 space-y-6">
@@ -17,11 +37,13 @@ function Inicio() {
         <section className="bg-darkCustom text-white rounded-lg p-6 flex flex-col md:flex-row justify-between items-center">
           <div>
             <p className="text-lg">Dinero disponible</p>
-            <h2 className="text-4xl font-bold mt-2">$ 6.890.534,17</h2>
+            <h2 className="text-4xl font-bold mt-2">
+              ${userData?.available_amount.toLocaleString("es-ES") || "0"}
+            </h2>
           </div>
           <div className="flex space-x-4 mt-4 md:mt-0">
-            <Link href="#" className="text-greenCustom underline">Ver tarjetas</Link>
-            <Link href="#" className="text-greenCustom underline">Ver CVU</Link>
+            <Link href="/tarjetas" className="text-greenCustom underline">Ver tarjetas</Link>
+            <Link href="/cargar-dinero/transferencia" className="text-greenCustom underline">Ver CVU</Link>
           </div>
         </section>
 
@@ -46,14 +68,12 @@ function Inicio() {
 
         {/* Bloque 4: Dashboard */}
         <section>
-          {/* Aquí se renderizará el componente Dashboard */}
-            <Dashboard 
-                transactions={mockTransactions}
-                limit={10} 
-                showViewAll={true} 
-        showPagination={false}
-                title="Tu actividad" 
-            />
+          <Dashboard
+            limit={10}
+            showViewAll={true}
+            showPagination={false}
+            title="Tu actividad"
+          />
         </section>
       </div>
     </Layout>

@@ -3,7 +3,7 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { createDeposit } from "@/services/TransferencesService";
 
-// Definir el tipo esperado de respuesta del depósito
+// Tipo para la respuesta del depósito
 interface DepositResponse {
     amount: number;
     dated: string;
@@ -13,25 +13,26 @@ interface DepositResponse {
 
 export default function ConfirmarMonto() {
     const router = useRouter();
-    const { amount, cardNumber } = router.query;
+    const { amount, cardNumber } = router.query; // Obtenemos el monto y número de la tarjeta desde la query
     const { token, userData } = useAuth();
 
     const handleContinue = async () => {
-        if (!userData?.id || !userData.cvu || !token || !cardNumber || !amount) {
+        if (!userData?.id || !token || !amount || !cardNumber) {
             alert("Faltan datos para procesar la transacción. Por favor, revisa tu sesión.");
             return;
         }
 
         try {
+            // Datos para el depósito
             const depositData = {
-                amount: parseFloat(amount as string),
-                dated: new Date().toISOString(),
-                destination: userData.cvu,
-                origin: cardNumber as string,
+                amount: parseFloat(amount as string), // Monto positivo para depositar
+                dated: new Date().toISOString(),    // Fecha actual en formato ISO
+                destination: userData.cvu,          // CVU de la cuenta destino
+                origin: cardNumber as string,       // Número de tarjeta como origen
             };
 
-            // Realizar la transacción
-            const response = await createDeposit(userData.id, token, depositData) as DepositResponse;
+            // Realizar el depósito
+            const response: DepositResponse = await createDeposit(userData.id, token, depositData)as DepositResponse;
 
             // Redirigir a DineroCargado con los datos del depósito
             router.push({
@@ -45,8 +46,8 @@ export default function ConfirmarMonto() {
             });
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-            console.error("Error en la transacción:", errorMessage);
-            alert("Hubo un error al procesar la transacción. Inténtalo nuevamente.");
+            console.error("Error en el depósito:", errorMessage);
+            alert("Hubo un error al procesar el depósito. Inténtalo nuevamente.");
         }
     };
 
