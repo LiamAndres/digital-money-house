@@ -40,10 +40,8 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
   // Cargar las transacciones al montar el componente
   useEffect(() => {
     const fetchTransactions = async () => {
-      if (!token || !userData?.id) {
-        setError("No se pudo cargar la actividad. Inicia sesión nuevamente.");
-        setLoading(false);
-        return;
+      if (!token || !userData) {
+        return; // No ejecuta la petición hasta que userData esté listo
       }
 
       try {
