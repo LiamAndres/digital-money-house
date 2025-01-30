@@ -80,3 +80,42 @@ export const getTransferences = async (accountId, token) => {
         throw error;
     }
 };
+
+/**
+ * Realiza un pago a un servicio como una transferencia.
+ * @param {number} accountId - ID de la cuenta del usuario.
+ * @param {string} token - Token de autenticación.
+ * @param {number} amount - Monto a pagar (negativo para débito).
+ * @param {string} destination - Descripción del pago (Ej: "Pago de Netflix").
+ * @param {string} origin - CVU del usuario.
+ * @returns {Promise<object>} - Datos de la transacción realizada.
+ */
+export const makePayment = async (accountId, token, amount, destination, origin) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/accounts/${accountId}/transferences`, {
+            method: "POST",
+            headers: {
+                Authorization: token,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                amount,
+                dated: new Date().toISOString(),
+                destination,
+                origin,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Error al procesar el pago.");
+        }
+
+        const data = await response.json();
+        console.log("Pago realizado con éxito:", data);
+        return data;
+    } catch (error) {
+        console.error("Error en makePayment:", error.message || error);
+        throw error;
+    }
+};
