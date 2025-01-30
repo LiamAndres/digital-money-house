@@ -20,19 +20,19 @@ export default function MediosDePago() {
 
   useEffect(() => {
     const fetchService = async () => {
-        if (!id) return;
-        try {
-            const data = await getServiceById(Number(id));
-            setService(data as Service); // 🔥 Cast manual a `Service`
-        } catch (error) {
-            console.error("Error obteniendo el servicio:", error);
-        } finally {
-            setLoading(false);
-        }
+      if (!id) return;
+      try {
+        const data = await getServiceById(Number(id));
+        setService(data as Service); // 🔥 Cast manual a `Service`
+      } catch (error) {
+        console.error("Error obteniendo el servicio:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchService();
-}, [id]);
+  }, [id]);
 
   const handlePagar = () => {
     if (!service || !userData) return;
