@@ -27,8 +27,12 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
                     <div className="lg:hidden bg-greenCustom text-darkCustom font-bold rounded-full w-10 h-10 flex items-center justify-center">
                         {getInitials(userData.firstname, userData.lastname)}
                     </div>
-                    <button onClick={onMenuClick} className="lg:hidden text-white text-2xl">
-                        ☰
+                    <button onClick={onMenuClick} className="lg:hidden text-white text-2xl text-greenCustom">
+                        <img
+                            src="/images/icon-menu-mobile.png"
+                            alt="Menú móvil"
+                            className="w-8 h-8" // Ajusta el tamaño según necesites
+                        />
                     </button>
 
                 </div>

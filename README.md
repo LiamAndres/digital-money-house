@@ -1,40 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# 💰 Digital Money House - Billetera Virtual  
 
-## Getting Started
+Este proyecto es una **billetera virtual** desarrollada con **Next.js y TypeScript**, que permite a los usuarios **gestionar su dinero, pagar servicios y realizar transacciones**.  
 
-First, run the development server:
+## 🚀 Tecnologías utilizadas  
+- **Next.js** (React + SSR)  
+- **TypeScript**  
+- **Tailwind CSS**  
+- **API REST** para operaciones financieras  
+- **Jest + React Testing Library** (pruebas automatizadas)  
 
-```bash
+## 📂 Estructura del Proyecto  
+/components - Componentes reutilizables
+/pages - Rutas principales de la aplicación
+/services - Conexión con la API
+/context - Manejo de autenticación y estado global
+
+
+## 🔧 Instalación y ejecución  
+
+1️⃣ Clona este repositorio  
+
+git clone https://github.com/LiamAndres/digital-money-house.git
+
+2️⃣ Instala dependencias
+
+npm install
+
+3️⃣ Inicia el servidor de desarrollo
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+La app estará disponible en http://localhost:3000
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+✅ Funcionalidades
+✔️ Registro e inicio de sesión
+✔️ Gestión de perfil y medios de pago
+✔️ Carga de dinero a la billetera
+✔️ Pago de servicios con saldo disponible
+✔️ Historial de transacciones y actividad
+✔️ Interfaz optimizada para mobile y desktop
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## 📦 Deployment
+El proyecto está disponible en Vercel:
+🔗 https://digital-money-house.vercel.app
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## 🧪 Pruebas
+✅ Pruebas Unitarias
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+Para ejecutar las pruebas unitarias con Jest + React Testing Library:
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npm run test
 
-## Learn More
+Pruebas implementadas:
+✔️ Validación de formulario de inicio de sesión
+✔️ Prueba del buscador de servicios
+✔️ Prueba de filtrado en la actividad del usuario
+✔️ Prueba de lógica de pago en confirmar.tsx
 
-To learn more about Next.js, take a look at the following resources:
+✅ Pruebas de Integración
+✔️ Se realizó una prueba de integración para verificar el flujo completo de pago de servicios.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+✅ Testing Manual
+✔️ Se realizaron pruebas manuales en los diferentes flujos de la aplicación.
+✔️ Se validaron los casos de prueba en formularios y respuestas de la API.

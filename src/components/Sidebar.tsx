@@ -74,7 +74,11 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
                             Hola, {userData?.firstname} {userData?.lastname}
                         </span>
                         <button onClick={onClose} className="text-greenCustom text-2xl">
-                            ✕
+                            <img
+                                src="/images/icon-close.png"
+                                alt="Menú móvil"
+                                className="w-8 h-8" // Ajusta el tamaño según necesites
+                            />
                         </button>
                     </div>
 
