@@ -96,7 +96,9 @@ export default function Register() {
         <div className="bg-darkCustom min-h-screen flex flex-col">
             {/* Navbar */}
             <div className="bg-greenCustom p-4 flex justify-between items-center">
-                <img src="/images/Logo-black.png" alt="Logo" className="h-8" />
+                <Link href="/">
+                    <img src="/images/Logo-black.png" alt="Logo" className="h-8" />
+                </Link>
                 <Link
                     href="/auth/login"
                     className="bg-[#3A393E] text-white font-bold text-[14px] px-4 py-2 rounded-md hover:opacity-90"

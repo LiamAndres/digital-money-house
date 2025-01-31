@@ -20,13 +20,15 @@ export default function Navbar() {
     return (
         <nav className="bg-darkCustom text-white p-4 flex justify-between items-center">
             {/* Logo */}
-            <div>
-                <img
-                    src="/images/logo.png"
-                    alt="Digital Money House Logo"
-                    className="h-10"
-                />
-            </div>
+            <Link href="/">
+                <div>
+                    <img
+                        src="/images/logo.png"
+                        alt="Digital Money House Logo"
+                        className="h-10"
+                    />
+                </div>
+            </Link>
 
             {/* Bloque del usuario autenticado (Mock) */}
             {isAuthenticated && userData && (
@@ -36,7 +38,7 @@ export default function Navbar() {
                     title="Ir a Inicio"
                 >
                     <div className="bg-greenCustom text-darkCustom font-bold rounded-full w-10 h-10 flex items-center justify-center">
-                    {getInitials(userData.firstname, userData.lastname)}
+                        {getInitials(userData.firstname, userData.lastname)}
                     </div>
                     <span className="font-medium">
                         Hola, {userData.firstname} {userData.lastname}

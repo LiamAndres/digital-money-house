@@ -55,7 +55,7 @@ export default function Login() {
 
   const handleEmailStep = (data: any) => {
     setEmail(data.email); // Guardar el email en el estado
-    
+
     resetPasswordForm(); // Limpia cualquier valor residual en el formulario de contraseña
     console.log("Formulario de contraseña reiniciado", data);
     setStep(2); // Avanza al siguiente paso
@@ -69,14 +69,14 @@ export default function Login() {
         email: email, // Guardamos el email del primer paso
         password: data.password,
       };
-  
+
       console.log("Enviando credenciales:", credentials);
       const result = await loginUser(credentials); // Llamamos al servicio de login
       console.log("Inicio de sesión exitoso:", result);
-  
+
       // Usar el método login del AuthContext
       await login(result.token);
-  
+
       // Redirigir al usuario a una pantalla principal o dashboard
       router.push("/inicio");
     } catch (error: any) {
@@ -87,9 +87,11 @@ export default function Login() {
   return (
     <div className="bg-darkCustom min-h-screen flex flex-col">
       {/* Navbar */}
-      <div className="bg-greenCustom p-4 flex justify-between items-center">
-        <img src="/images/Logo-black.png" alt="Logo" className="h-8" />
-      </div>
+      <Link href="/">
+        <div className="bg-greenCustom p-4 flex justify-between items-center">
+          <img src="/images/Logo-black.png" alt="Logo" className="h-8" />
+        </div>
+      </Link>
 
       {/* Contenido */}
       <div className="flex-grow flex flex-col justify-center items-center px-4">
@@ -127,7 +129,7 @@ export default function Login() {
               Ingresá tu contraseña
             </h1>
             <form
-            key="password-step"
+              key="password-step"
               onSubmit={handlePasswordSubmit(handlePasswordStep)}
               className="flex flex-col gap-2"
               autoComplete="off"
