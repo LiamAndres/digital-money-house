@@ -53,9 +53,9 @@ export default function Home() {
       {/* Servicios */}
       <section className="relative py-16 bg-greenCustom rounded-t-[30px] z-20">
         {/* Cards */}
-        <div className="container mx-auto px-6 lg:px-20 grid grid-cols-1 md:grid-cols-2 gap-6 -mt-32">
+        <div className="container mx-auto px-6 lg:px-20 grid grid-cols-1 md:grid-cols-2 gap-4 -mt-32">
           {/* Card 1 */}
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-[400px] mx-auto">
+          <div className="bg-white p-6 rounded-3xl lg:-mr-1 shadow-lg max-w-[550px] mx-auto">
             <h3 className="font-bold text-[40px] leading-tight text-blackCustom text-center">
               Transferí dinero
             </h3>
@@ -66,7 +66,7 @@ export default function Home() {
           </div>
 
           {/* Card 2 */}
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-[400px] mx-auto">
+          <div className="bg-white p-6 rounded-3xl lg:-ml-1 shadow-lg max-w-[550px] mx-auto">
             <h3 className="font-bold text-[40px] leading-tight text-blackCustom text-center">
               Pago de servicios
             </h3>
