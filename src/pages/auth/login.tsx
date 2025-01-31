@@ -39,8 +39,10 @@ export default function Login() {
     register: registerEmail,
     handleSubmit: handleEmailSubmit,
     formState: { errors: emailErrors },
+    trigger,
   } = useForm({
     resolver: yupResolver(emailSchema),
+    mode: "onBlur",
   });
 
   // Formulario para el paso de contraseña
@@ -51,6 +53,7 @@ export default function Login() {
     formState: { errors: passwordErrors },
   } = useForm({
     resolver: yupResolver(passwordSchema),
+    mode: "onBlur",
   });
 
   const handleEmailStep = (data: any) => {

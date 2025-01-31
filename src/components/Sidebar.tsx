@@ -59,6 +59,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
 
             {/* Sidebar en Mobile (Solo visible si isOpen === true) */}
             <div
+                data-testid="sidebar"
                 className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"
                     }`}
                 onClick={onClose}

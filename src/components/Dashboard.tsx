@@ -161,7 +161,7 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
   );
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4">
+    <div data-testid="dashboard-container" className="bg-white rounded-lg shadow-lg p-4">
       <h2 className="text-lg text-darkCustom font-bold mb-4">{title}</h2>
       {/* Seccion de Buscador y filtros */}
       {showFilters && (
