@@ -50,16 +50,16 @@ Para ejecutar las pruebas unitarias con Jest + React Testing Library:
 
 npm run test
 
-✅ Pruebas unitarias (componentes y lógica de negocio)
-✔️ Validación del formulario de login (email válido, contraseña obligatoria).
-✔️ Prueba del Sidebar en mobile (se renderiza, está oculto por defecto y se muestra al abrir).
-✔️ Prueba del Dashboard (se renderiza y muestra el título correctamente).
-✔️ Prueba del servicio de transacciones (getAllTransactions) (retorna datos correctos y maneja errores).
-✔️ Prueba del servicio getServiceById (verifica que obtiene datos y maneja errores).
-✔️ Prueba del servicio makePayment (envía los datos correctamente y maneja errores de API).
+- **✅ Pruebas unitarias (componentes y lógica de negocio)**
+  - ✔️ Validación del formulario de login (email válido, contraseña obligatoria).
+  - ✔️ Prueba del Sidebar en mobile (se renderiza, está oculto por defecto y se muestra al abrir).
+  - ✔️ Prueba del Dashboard (se renderiza y muestra el título correctamente).
+  - ✔️ Prueba del servicio de transacciones (`getAllTransactions`) (retorna datos correctos y maneja errores).
+  - ✔️ Prueba del servicio `getServiceById` (verifica que obtiene datos y maneja errores).
+  - ✔️ Prueba del servicio `makePayment` (envía los datos correctamente y maneja errores de API).
 
-✅ Pruebas de integración
-✔️ Flujo de pago de servicios: Verificamos que la lógica de pago se ejecuta correctamente desde la selección del servicio hasta la confirmación del pago.
+- **✅ Pruebas de integración**
+  - ✔️ Flujo de pago de servicios: Verificamos que la lógica de pago se ejecuta correctamente desde la selección del servicio hasta la confirmación del pago.
 
-✅ Testing Manual
-✔️ Se realizaron pruebas manuales en los diferentes flujos de la aplicación, verificando validaciones de formularios, navegación y respuestas de la API.
+- **✅ Testing Manual**
+  - ✔️ Se realizaron pruebas manuales en los diferentes flujos de la aplicación, verificando validaciones de formularios, navegación y respuestas de la API.
