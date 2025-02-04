@@ -41,7 +41,7 @@ La app estará disponible en http://localhost:3000
 
 ## 📦 Deployment
 El proyecto está disponible en Vercel:
-🔗 https://digital-money-house.vercel.app
+🔗 https://digital-money-house-nu.vercel.app/
 
 ## 🧪 Pruebas
 ✅ Pruebas Unitarias
