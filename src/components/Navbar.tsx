@@ -1,7 +1,11 @@
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 
-export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
+interface NavbarProps {
+    onMenuClick?: () => void; // ✅ Hacerlo opcional con "?"
+  }
+
+export default function Navbar({ onMenuClick = () => {} }: NavbarProps) {
     const { isAuthenticated, userData } = useAuth();
 
     const getInitials = (firstName: string, lastName: string) => {
@@ -14,7 +18,7 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
             <Link href="/">
                 <div>
                     <img
-                        src="/images/logo.png"
+                        src="/images/logo-dmh.png"
                         alt="Digital Money House Logo"
                         className="h-10"
                     />
