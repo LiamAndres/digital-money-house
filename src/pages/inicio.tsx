@@ -60,12 +60,17 @@ function Inicio() {
 
         {/* Bloque 2: Botones principales */}
         <section className="flex flex-col md:flex-row justify-between gap-4">
-          <button className="bg-greenCustom text-darkCustom font-bold py-3 rounded-lg w-full md:w-1/2">
-            Cargar dinero
-          </button>
-          <button className="bg-greenCustom text-darkCustom font-bold py-3 rounded-lg w-full md:w-1/2">
-            Pago de servicios
-          </button>
+          <Link href="/cargar-dinero" passHref className="w-full md:w-1/2">
+            <button className="bg-greenCustom text-darkCustom font-bold py-3 rounded-lg w-full text-center">
+              Cargar dinero
+            </button>
+          </Link>
+
+          <Link href="/pagar-servicios" passHref className="w-full md:w-1/2">
+            <button className="bg-greenCustom text-darkCustom font-bold py-3 rounded-lg w-full text-center">
+              Pago de servicios
+            </button>
+          </Link>
         </section>
 
         {/* Bloque 3: Barra de búsqueda */}
