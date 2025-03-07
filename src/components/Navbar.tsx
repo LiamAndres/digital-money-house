@@ -3,7 +3,7 @@ import Link from "next/link";
 
 interface NavbarProps {
     onMenuClick?: () => void; // ✅ Hacerlo opcional con "?"
-  }
+}
 
 export default function Navbar({ onMenuClick = () => {} }: NavbarProps) {
     const { isAuthenticated, userData } = useAuth();
@@ -20,7 +20,7 @@ export default function Navbar({ onMenuClick = () => {} }: NavbarProps) {
                     <img
                         src="/images/logo-dmh.png"
                         alt="Digital Money House Logo"
-                        className="h-10"
+                        className="h-auto w-auto max-w-[160px] sm:max-w-[180px] lg:max-w-[200px] object-contain"
                     />
                 </div>
             </Link>
@@ -54,11 +54,19 @@ export default function Navbar({ onMenuClick = () => {} }: NavbarProps) {
 
             {/* Botones de autenticación si no está autenticado */}
             {!isAuthenticated && (
-                <div>
-                    <Link href="/auth/login" className="mr-4 text-greenCustom border border-greenCustom px-4 py-2 rounded-md hover:bg-greenCustom hover:text-black">
+                <div className="flex flex-wrap gap-2 sm:gap-4 items-center justify-end">
+                    <Link
+                        href="/auth/login"
+                        className="text-greenCustom border border-greenCustom px-3 sm:px-4 py-2 rounded-md hover:bg-greenCustom hover:text-black 
+            text-sm sm:text-base text-center"
+                    >
                         Ingresar
                     </Link>
-                    <Link href="/auth/register" className="bg-greenCustom text-black px-4 py-2 rounded-md hover:opacity-90">
+                    <Link
+                        href="/auth/register"
+                        className="bg-greenCustom text-black px-3 sm:px-4 py-2 rounded-md hover:opacity-90 
+            text-sm sm:text-base text-center"
+                    >
                         Crear cuenta
                     </Link>
                 </div>

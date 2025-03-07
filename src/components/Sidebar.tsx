@@ -16,40 +16,40 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
             {/* Sidebar en Desktop (Siempre visible en lg) */}
             <nav className="hidden lg:flex bg-greenCustom flex-col w-64 text-black p-6">
                 <ul className="space-y-4">
-                    <li className="hover:bg-gray-100 rounded-md transition-all duration-200 active:scale-95">
-                        <Link href="/inicio" className="block text-black p-2 w-full h-full">
+                    <li className="hover:bg-darkCustom rounded-md transition-all duration-200 active:scale-95">
+                        <Link href="/inicio" className="block text-black hover:text-greenCustom p-2 w-full h-full">
                             Inicio
                         </Link>
                     </li>
-                    <li className="hover:bg-gray-100 rounded-md transition-all duration-200 active:scale-95">
-                        <Link href="/actividad" className="block text-black p-2 w-full h-full">
+                    <li className="hover:bg-darkCustom rounded-md transition-all duration-200 active:scale-95">
+                        <Link href="/actividad" className="block text-black hover:text-greenCustom p-2 w-full h-full">
                             Actividad
                         </Link>
                     </li>
-                    <li className="hover:bg-gray-100 rounded-md transition-all duration-200 active:scale-95">
-                        <Link href="/perfil" className="block text-black p-2 w-full h-full">
+                    <li className="hover:bg-darkCustom rounded-md transition-all duration-200 active:scale-95">
+                        <Link href="/perfil" className="block text-black hover:text-greenCustom p-2 w-full h-full">
                             Tu perfil
                         </Link>
                     </li>
-                    <li className="hover:bg-gray-100 rounded-md transition-all duration-200 active:scale-95">
-                        <Link href="/cargar-dinero" className="block text-black p-2 w-full h-full">
+                    <li className="hover:bg-darkCustom rounded-md transition-all duration-200 active:scale-95">
+                        <Link href="/cargar-dinero" className="block text-black hover:text-greenCustom p-2 w-full h-full">
                             Cargar dinero
                         </Link>
                     </li>
-                    <li className="hover:bg-gray-100 rounded-md transition-all duration-200 active:scale-95">
-                        <Link href="/pagar-servicios" className="block text-black p-2 w-full h-full">
+                    <li className="hover:bg-darkCustom rounded-md transition-all duration-200 active:scale-95">
+                        <Link href="/pagar-servicios" className="block text-black hover:text-greenCustom p-2 w-full h-full">
                             Pagar servicios
                         </Link>
                     </li>
-                    <li className="hover:bg-gray-100 rounded-md transition-all duration-200 active:scale-95">
-                        <Link href="/tarjetas" className="block text-black p-2 w-full h-full">
+                    <li className="hover:bg-darkCustom rounded-md transition-all duration-200 active:scale-95">
+                        <Link href="/tarjetas" className="block text-black hover:text-greenCustom p-2 w-full h-full">
                             Tarjetas
                         </Link>
                     </li>
-                    <li className="hover:bg-gray-100 rounded-md transition-all duration-200 active:scale-95">
+                    <li className="hover:bg-darkCustom rounded-md transition-all duration-200 active:scale-95">
                         <button
                             onClick={handleLogout}
-                            className="block text-red-600 p-2 w-full h-full text-left"
+                            className="block text-black/50 hover:text-greenCustom p-2 w-full h-full text-left"
                         >
                             Cerrar sesión
                         </button>
