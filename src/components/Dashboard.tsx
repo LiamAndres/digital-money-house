@@ -35,6 +35,7 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
   const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>(""); // Estado para el buscador
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const pageSize = 10;
 
   // Cargar las transacciones al montar el componente
@@ -161,158 +162,196 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
   );
 
   return (
-    <div data-testid="dashboard-container" className="bg-white rounded-lg shadow-lg p-4">
-      <h2 className="text-lg text-darkCustom font-bold mb-4">{title}</h2>
+    <>
+
+
       {/* Seccion de Buscador y filtros */}
       {showFilters && (
         <>
-
-          {/* Buscador */}
-          <div className="mb-4">
-            <label htmlFor="searchFilter" className="block text-darkCustom font-bold mb-2">
-              Buscar por título:
-            </label>
+          {/* Buscador y botón Filtrar (FUERA del Dashboard en Desktop) */}
+          <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+            {/* Buscador */}
             <input
               id="searchFilter"
               type="text"
               placeholder="Buscar en tu actividad"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
+              className="flex-1 min-w-[200px] md:min-w-[300px] lg:w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
             />
-          </div>
 
-          {/* Filtros por período */}
-          <div className="mb-4">
-            <label htmlFor="periodFilter" className="block text-darkCustom font-bold mb-2">
-              Filtrar por período:
-            </label>
-            <select
-              id="periodFilter"
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
-            >
-              <option value="all">Todos</option>
-              <option value="today">Hoy</option>
-              <option value="yesterday">Ayer</option>
-              <option value="lastWeek">Última semana</option>
-              <option value="last15Days">Últimos 15 días</option>
-              <option value="lastMonth">Último mes</option>
-              <option value="last3Months">Últimos 3 meses</option>
-            </select>
-          </div>
-
-          {/* Filtro por tipo */}
-          <div className="mb-4">
-            <label htmlFor="typeFilter" className="block text-darkCustom font-bold mb-2">
-              Filtrar por tipo de operación:
-            </label>
-            <select
-              id="typeFilter"
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
-            >
-              <option value="all">Todos</option>
-              <option value="ingresos">Ingresos</option>
-              <option value="egresos">Egresos</option>
-            </select>
-          </div>
-
-          {/* Botón para limpiar filtros */}
-          <div className="mb-4 text-right">
+            {/* Botón Filtrar (Solo visible en Desktop) */}
             <button
-              onClick={handleClearFilters}
-              className="bg-red-500 text-white font-bold py-2 px-4 rounded-md hover:bg-red-600"
+              onClick={() => setIsFilterOpen(true)}
+              className="hidden md:flex bg-greenCustom text-darkCustom font-bold py-2 px-4 rounded-md hover:bg-opacity-90 items-center gap-2"
             >
-              Limpiar Filtros
+              <span>Filtrar</span>
+              <img src="/images/icono-filtro.svg" alt="Filtrar" className="h-5 w-5" />
             </button>
           </div>
+          {/* Modal de filtros */}
+          {isFilterOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+                <h3 className="text-darkCustom font-bold mb-4">Filtrar por:</h3>
+
+                {/* Período */}
+                <div className="mb-4">
+                  <label className="block text-darkCustom font-bold mb-2">Período</label>
+                  <select
+                    value={selectedPeriod}
+                    onChange={(e) => setSelectedPeriod(e.target.value)}
+                    className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="today">Hoy</option>
+                    <option value="yesterday">Ayer</option>
+                    <option value="lastWeek">Última semana</option>
+                    <option value="last15Days">Últimos 15 días</option>
+                    <option value="lastMonth">Último mes</option>
+                    <option value="last3Months">Últimos 3 meses</option>
+                  </select>
+                </div>
+
+                {/* Tipo de operación */}
+                <div className="mb-4">
+                  <label className="block text-darkCustom font-bold mb-2">Tipo de operación</label>
+                  <select
+                    value={selectedType}
+                    onChange={(e) => setSelectedType(e.target.value)}
+                    className="w-full py-2 px-4 border border-gray-300 text-darkCustom rounded-md focus:outline-none focus:ring-2 focus:ring-greenCustom"
+                  >
+                    <option value="all">Todos</option>
+                    <option value="ingresos">Ingresos</option>
+                    <option value="egresos">Egresos</option>
+                  </select>
+                </div>
+
+                {/* Botones de acción */}
+                <div className="flex justify-between">
+                  <button
+                    onClick={() => {
+                      setSelectedPeriod("all");
+                      setSelectedType("all");
+                      setIsFilterOpen(false);
+                    }}
+                    className="text-red-500 font-bold"
+                  >
+                    Borrar filtros
+                  </button>
+
+                  <button
+                    onClick={() => setIsFilterOpen(false)}
+                    className="bg-greenCustom text-darkCustom font-bold py-2 px-4 rounded-md hover:bg-opacity-90"
+                  >
+                    Aplicar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
 
-      {/* Sección de registros mostrados ingresos y egresos */}
-      {loading ? (
-        <p className="text-gray-500">Cargando actividad...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <>
-          <ul className="divide-y divide-gray-200">
-            {paginatedTransactions.map((transaction) => (
-              <li
-                key={transaction.id}
-                onClick={() =>
-                  router.push(`/detalle-transaccion/${transaction.id}?accountId=${transaction.account_id}`)
-                }
-                className="flex justify-between items-center py-2 cursor-pointer hover:bg-gray-100 rounded-lg p-2 transition-all"
-              >
-                <div className="flex items-center">
-                  <div
-                    className={`rounded-full h-4 w-4 mr-4 ${transaction.type === "Deposit" ? "bg-greenCustom" : "bg-red-500"
-                      }`}
-                  ></div>
-                  <p className="text-darkCustom">{transaction.description}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-darkCustom">{`$ ${Math.abs(transaction.amount)}`}</p>
-                  <p className="text-sm text-gray-500">
-                    {new Date(transaction.dated).toLocaleDateString("es-ES", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+      <div data-testid="dashboard-container" className="bg-white rounded-lg shadow-lg p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg text-darkCustom font-bold">{title}</h2>
+          {/* Botón Filtrar (Visible solo en Mobile) */}
+          {showFilters && (
+            <button
+              onClick={() => setIsFilterOpen(true)}
+              className="block md:hidden text-darkCustom font-bold py-2 px-4 rounded-md hover:bg-opacity-90 flex items-center gap-2"
+            >
+              <span>Filtrar</span>
+              <img src="/images/icono-filtro-mobile.svg" alt="Filtrar" className="h-5 w-5" />
+            </button>
+          )}
 
-          {showPagination && (
-            <div className="flex justify-center mt-4 space-x-2">
-              {/* <button
+        </div>
+
+        {/* Sección de registros mostrados ingresos y egresos */}
+        {loading ? (
+          <p className="text-gray-500">Cargando actividad...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <>
+            <ul className="divide-y divide-gray-200">
+              {paginatedTransactions.map((transaction) => (
+                <li
+                  key={transaction.id}
+                  onClick={() =>
+                    router.push(`/detalle-transaccion/${transaction.id}?accountId=${transaction.account_id}`)
+                  }
+                  className="flex justify-between items-center py-2 cursor-pointer hover:bg-gray-100 rounded-lg p-2 transition-all"
+                >
+                  <div className="flex items-center">
+                    <div
+                      className={`rounded-full h-4 w-4 mr-4 ${transaction.type === "Deposit" ? "bg-greenCustom" : "bg-red-500"
+                        }`}
+                    ></div>
+                    <p className="text-darkCustom">{transaction.description}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-darkCustom">{`$ ${Math.abs(transaction.amount)}`}</p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(transaction.dated).toLocaleDateString("es-ES", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {showPagination && (
+              <div className="flex justify-center mt-4 space-x-2">
+                {/* <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 className="text-darkCustom px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
               >
                 Anterior
               </button> */}
-              {/* Números de página */}
-              {[...Array(Math.ceil(filteredTransactions.length / pageSize)).keys()].map((num) => (
-                <button
-                  key={num + 1}
-                  onClick={() => setCurrentPage(num + 1)}
-                  className={`px-4 py-2 rounded-md ${currentPage === num + 1 ? "bg-grayCustom text-darkCustom font-bold" : "bg-white text-darkCustom font-bold hover:bg-gray-300"
-                    }`}
-                >
-                  {num + 1}
-                </button>
-              ))}
-              {/* <button
+                {/* Números de página */}
+                {[...Array(Math.ceil(filteredTransactions.length / pageSize)).keys()].map((num) => (
+                  <button
+                    key={num + 1}
+                    onClick={() => setCurrentPage(num + 1)}
+                    className={`px-4 py-2 rounded-md ${currentPage === num + 1 ? "bg-grayCustom text-darkCustom font-bold" : "bg-white text-darkCustom font-bold hover:bg-gray-300"
+                      }`}
+                  >
+                    {num + 1}
+                  </button>
+                ))}
+                {/* <button
                 disabled={currentPage === Math.ceil(filteredTransactions.length / pageSize)}
                 onClick={() => setCurrentPage((prev) => prev + 1)}
                 className="text-darkCustom px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
               >
                 Siguiente
               </button> */}
-            </div>
-          )}
-        </>
-      )}
+              </div>
+            )}
+          </>
+        )}
 
-      {showViewAll && (
-        <div className="mt-4">
-          <Link
-            href="/actividad"
-            className="text-darkCustom font-bold hover:underline flex justify-between items-center"
-          >
-            <span>Ver toda tu actividad</span>
-            <img src="/images/Icon-flecha-negra.png" alt="Continuar" className="h-5 w-5" />
-          </Link>
-        </div>
-      )}
-    </div>
+        {showViewAll && (
+          <div className="mt-4">
+            <Link
+              href="/actividad"
+              className="text-darkCustom font-bold hover:underline flex justify-between items-center"
+            >
+              <span>Ver toda tu actividad</span>
+              <img src="/images/Icon-flecha-negra.png" alt="Continuar" className="h-5 w-5" />
+            </Link>
+          </div>
+        )}
+      </div>
+    </>
+
   );
 };
 
