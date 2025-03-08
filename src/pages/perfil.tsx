@@ -55,7 +55,8 @@ export default function Perfil() {
                 : updatableData; // Excluir contraseña si está vacía
 
             const updatedData = await updateUser(userData.user_id, token, payload);
-            setUserData(updatedData); // Actualizar el contexto global con los nuevos datos
+            // Fusionamos los datos actualizados con `userData` para no perder información
+            setUserData({ ...userData, ...updatedData }); // Actualizar el contexto global con los nuevos datos
             setIsEditing(false); // Salir del modo edición
         } catch (error) {
             console.error("Error al actualizar datos:", (error as Error).message);

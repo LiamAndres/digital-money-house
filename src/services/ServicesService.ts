@@ -1,10 +1,20 @@
 const API_BASE_URL = "https://digitalmoney.digitalhouse.com";
 
 /**
- * Obtiene la lista de servicios disponibles para pagar.
- * @returns {Promise<Array<{ id: number, name: string, date: string }>>} - Lista de servicios
+ * ✅ Interfaz que representa un servicio.
  */
-export const getServices = async () => {
+interface Service {
+    id: number;
+    name: string;
+    date: string;
+    invoice_value?: number; // Opcional porque en `getServices` no se usa
+}
+
+/**
+ * ✅ Obtiene la lista de servicios disponibles para pagar.
+ * @returns {Promise<Service[]>} - Lista de servicios.
+ */
+export const getServices = async (): Promise<Service[]> => {
     try {
         const response = await fetch(`${API_BASE_URL}/service`, {
             method: "GET",
@@ -18,37 +28,30 @@ export const getServices = async () => {
             throw new Error(errorData.error || "Error al obtener los servicios.");
         }
 
-        const data = await response.json();
+        const data: any[] = await response.json(); // `data` es un array de objetos desconocidos
 
         // Validar la estructura y transformar si es necesario
         if (!Array.isArray(data)) {
             throw new Error("La respuesta del servidor no es válida. Se esperaba un array.");
         }
 
-        return data.map((service) => ({
-            id: service.id || 0,
-            name: service.name || "Servicio desconocido",
-            date: service.date || "Fecha no disponible",
+        return data.map((service): Service => ({
+            id: service.id ?? 0,
+            name: service.name ?? "Servicio desconocido",
+            date: service.date ?? "Fecha no disponible",
         }));
     } catch (error) {
-        console.error("Error en getServices:", error.message || error);
+        console.error("Error en getServices:", (error as Error).message || error);
         throw error;
     }
 };
 
 /**
- * @typedef {Object} Service
- * @property {number} id
- * @property {string} name
- * @property {string} date
- * @property {number} invoice_value
- */
-/**
- * Obtiene un servicio específico por su ID, obtenemos el valor del servicio.
+ * ✅ Obtiene un servicio específico por su ID, incluyendo el valor de la factura.
  * @param {number} serviceId - ID del servicio.
- * @returns {Promise<object>} - Detalles del servicio.
+ * @returns {Promise<Service>} - Detalles del servicio.
  */
-export const getServiceById = async (serviceId) => {
+export const getServiceById = async (serviceId: number): Promise<Service> => {
     try {
         const response = await fetch(`${API_BASE_URL}/service/${serviceId}`, {
             method: "GET",
@@ -62,8 +65,7 @@ export const getServiceById = async (serviceId) => {
             throw new Error(errorData.error || "Error al obtener el servicio.");
         }
 
-        /** @type {Service} */
-        const data = await response.json(); // 🔥 Ahora TypeScript lo reconoce como `Service`
+        const data: any = await response.json(); // `data` es un objeto desconocido
 
         return {
             id: data.id ?? 0,
@@ -72,9 +74,7 @@ export const getServiceById = async (serviceId) => {
             invoice_value: Number(data.invoice_value) ?? 0.0,
         };
     } catch (error) {
-        console.error("Error en getServiceById:", error.message || error);
+        console.error("Error en getServiceById:", (error as Error).message || error);
         throw error;
     }
 };
-
-

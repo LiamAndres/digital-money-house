@@ -10,9 +10,9 @@ interface Transaction {
   amount: number;
   dated: string;
   description: string;
-  destination: string;
+  destination?: string;
   id: number;
-  origin: string;
+  origin?: string;
   type: string;
 }
 
@@ -271,40 +271,44 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
 
           {showPagination && (
             <div className="flex justify-center mt-4 space-x-2">
-              <button
+              {/* <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 className="text-darkCustom px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
               >
                 Anterior
-              </button>
+              </button> */}
               {/* Números de página */}
               {[...Array(Math.ceil(filteredTransactions.length / pageSize)).keys()].map((num) => (
                 <button
                   key={num + 1}
                   onClick={() => setCurrentPage(num + 1)}
-                  className={`px-4 py-2 rounded-md ${currentPage === num + 1 ? "bg-greenCustom text-white font-bold" : "bg-gray-300 hover:bg-gray-400"
+                  className={`px-4 py-2 rounded-md ${currentPage === num + 1 ? "bg-grayCustom text-darkCustom font-bold" : "bg-white text-darkCustom font-bold hover:bg-gray-300"
                     }`}
                 >
                   {num + 1}
                 </button>
               ))}
-              <button
+              {/* <button
                 disabled={currentPage === Math.ceil(filteredTransactions.length / pageSize)}
                 onClick={() => setCurrentPage((prev) => prev + 1)}
                 className="text-darkCustom px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
               >
                 Siguiente
-              </button>
+              </button> */}
             </div>
           )}
         </>
       )}
 
       {showViewAll && (
-        <div className="text-right mt-4">
-          <Link href="/actividad" className="text-darkCustom font-bold hover:underline">
-            Ver toda tu actividad
+        <div className="mt-4">
+          <Link
+            href="/actividad"
+            className="text-darkCustom font-bold hover:underline flex justify-between items-center"
+          >
+            <span>Ver toda tu actividad</span>
+            <img src="/images/Icon-flecha-negra.png" alt="Continuar" className="h-5 w-5" />
           </Link>
         </div>
       )}
