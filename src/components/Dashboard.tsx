@@ -129,7 +129,7 @@ const Dashboard: React.FC<DashboardProps> = ({ limit, showPagination, showViewAl
     if (selectedType !== "all") {
       filtered = filtered.filter((tx) => {
         if (selectedType === "ingresos") return tx.type === "Deposit";
-        if (selectedType === "egresos") return tx.type === "Transaction";
+        if (selectedType === "egresos") return tx.type === "Transaction" || tx.type === "Transfer";
         return true;
       });
     }
