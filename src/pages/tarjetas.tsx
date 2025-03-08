@@ -93,14 +93,20 @@ export default function Tarjetas() {
           <h2 className="text-lg font-bold mb-4">
             Agregá tu tarjeta de débito o crédito
           </h2>
-          <div className="flex items-center justify-between">
-            {/* Icono "+" y texto "Nueva tarjeta" alineados a la izquierda */}
-            <AddNewCard href="/nueva-tarjeta" />
-            {/* Icono de flecha alineado a la derecha */}
-            <Link href="/nueva-tarjeta">
-              <img src="/images/flecha-continuar.png" alt="Continuar" className="h-6 w-6" />
-            </Link>
-          </div>
+          {cards.length >= 10 ? (
+            <p className="text-red-500 font-bold">
+              ❌ Has alcanzado el límite de 10 tarjetas.
+            </p>
+          ) : (
+            <div className="flex items-center justify-between">
+              {/* Icono "+" y texto "Nueva tarjeta" alineados a la izquierda */}
+              <AddNewCard href="/nueva-tarjeta" cardCount={cards.length} />
+              {/* Icono de flecha alineado a la derecha */}
+              <Link href="/nueva-tarjeta">
+                <img src="/images/flecha-continuar.png" alt="Continuar" className="h-6 w-6" />
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Bloque 2: Tus tarjetas */}
