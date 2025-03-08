@@ -18,6 +18,7 @@ interface ProfileData {
 export default function Perfil() {
     const { userData, token, setUserData } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
+    const [editingField, setEditingField] = useState<string | null>(null); // Campo en edición
     const [isLoading, setIsLoading] = useState(false);
 
     const [profileData, setProfileData] = useState<ProfileData>({
@@ -34,8 +35,12 @@ export default function Perfil() {
     };
 
     const handleEditClick = () => {
-        setIsEditing(true); // Activar modo edición
-        setProfileData((prev) => ({ ...prev, password: "" })); // Al entrar en modo edición, borrar el valor inicial del campo contraseña
+        setIsEditing(true); // Activa la edición de todos los campos
+        setEditingField(null); // Asegura que no haya edición individual activa
+    };
+
+    const handleFieldEditClick = (field: string) => {
+        setEditingField(field); // Activa la edición solo del campo seleccionado
     };
 
     const handleSaveClick = async () => {
@@ -66,9 +71,9 @@ export default function Perfil() {
 
     return (
         <Layout>
-            <div className="bg-EEEAEA min-h-screen flex flex-col gap-6 p-6">
+            <div className="bg-EEEAEA min-h-screen flex flex-col p-6 space-y-6">
                 {/* Bloque 1: Tus datos */}
-                <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-4xl mx-auto">
+                <div className="bg-white rounded-lg shadow-lg p-6 w-full">
                     <h2 className="text-darkCustom font-bold text-lg mb-4">Tus datos</h2>
                     <ul className="space-y-4">
                         {[
@@ -79,58 +84,63 @@ export default function Perfil() {
                             { label: "Teléfono", field: "phone", value: profileData.phone },
                             { label: "Contraseña", field: "password", value: profileData.password },
                         ].map((item) => (
-                            <li
-                                key={item.field}
-                                className="flex flex-col md:flex-row md:justify-between md:items-center gap-2"
-                            >
-                                <label
-                                    htmlFor={item.field}
-                                    className="text-darkCustom font-medium md:w-1/3"
-                                >
-                                    {item.label}
-                                </label>
-                                <input
-                                    id={item.field}
-                                    type={item.field === "password" ? "password" : "text"}
-                                    placeholder={item.field === "password" && !isEditing ? "******" : ""}
-                                    value={item.value}
-                                    onChange={(e) => handleInputChange(item.field, e.target.value)}
-                                    disabled={!isEditing && item.field !== "password"}
-                                    className={
-                                        `border border-gray-300 rounded-md px-2 py-1 w-full md:w-2/3
-                                        ${!isEditing ? "bg-gray-100 text-gray-700" : "bg-white text-gray-900"}
-                                        focus:outline-none`
-                                    }
-                                />
+                            <li key={item.field} className="flex justify-between items-center border-b border-gray-300 pb-2">
+                                <div className="flex-1">
+                                    <label htmlFor={item.field} className="text-darkCustom font-medium">
+                                        {item.label}
+                                    </label>
+                                    <input
+                                        id={item.field}
+                                        type={item.field === "password" ? "password" : "text"}
+                                        placeholder={item.field === "password" && (!isEditing || editingField !== "password") ? "******" : ""}
+                                        value={item.value}
+                                        onChange={(e) => handleInputChange(item.field, e.target.value)}
+                                        disabled={!(isEditing || editingField === item.field)}
+                                        className={`w-full bg-transparent text-gray-700 placeholder-gray-500 focus:outline-none ${isEditing || editingField === item.field ? "text-opacity-100" : "text-opacity-50"
+                                            }`}
+                                    />
+                                </div>
+                                <button onClick={() => handleFieldEditClick(item.field)} className="ml-2">
+                                    <img src="/images/icono-editar.png" alt="Editar" className="h-5 w-5" />
+                                </button>
                             </li>
                         ))}
                     </ul>
                     <div className="mt-6 flex justify-end gap-4">
-                        {!isEditing ? (
-                            <button
-                                onClick={handleEditClick}
-                                className="bg-greenCustom text-darkCustom font-bold py-2 px-4 rounded-md hover:bg-opacity-90"
-                            >
-                                Editar
-                            </button>
-                        ) : (
-                            <button
-                                onClick={handleSaveClick}
-                                className="bg-greenCustom text-darkCustom font-bold py-2 px-4 rounded-md hover:bg-opacity-90"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? "Guardando..." : "Guardar"}
-                            </button>
+                        {!isEditing && !editingField && (
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    onClick={handleEditClick}
+                                    className="bg-greenCustom text-darkCustom font-bold py-2 px-4 rounded-md hover:bg-opacity-90"
+                                >
+                                    Editar
+                                </button>
+                            </div>
+                        )}
+
+                        {/* ✅ Botón "Guardar" aparece cuando hay edición */}
+                        {(isEditing || editingField) && (
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    onClick={handleSaveClick}
+                                    className="bg-greenCustom text-darkCustom font-bold py-2 px-4 rounded-md hover:bg-opacity-90"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? "Guardando..." : "Guardar"}
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
+
                 {/* Bloque 2: Gestioná los medios de pago */}
-                <div className="w-full max-w-4xl mx-auto">
+                <div className="w-full">
                     <Link
                         href="/tarjetas"
-                        className="bg-greenCustom text-darkCustom font-bold py-4 px-6 block text-center rounded-lg hover:bg-opacity-90 shadow-lg"
+                        className="bg-greenCustom text-darkCustom font-bold py-8 px-6 block rounded-lg hover:bg-opacity-90 shadow-lg flex justify-between items-center"
                     >
-                        Gestioná los medios de pago
+                        <span>Gestioná los medios de pago</span>
+                        <img src="/images/Icon-flecha-negra.png" alt="Continuar" className="h-5 w-5" />
                     </Link>
                 </div>
 
